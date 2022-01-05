@@ -1,0 +1,86 @@
+<odoo>
+  <data>
+
+    <!-- model.name inherit form view -->
+    <record id="method_minori_view_form_productos" model="ir.ui.view">
+      <field name="name">method.minori.view.form.productos</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="product.product_template_form_view"/>
+      <field name="arch" type="xml">
+        <field name="categ_id" position="after">
+              <field name="marca_id"/>
+        </field> 
+      </field>
+    </record>
+
+    <!-- model.name form view -->
+    <record id="method_minori_view_form_marcas" model="ir.ui.view">
+      <field name="name">Marcas de Productos</field>
+      <field name="model">method_minori.marcas</field>
+      <field name="arch" type="xml">
+        <form string="">
+          <sheet>
+            <group string="Marcas de Producto">
+              <group>
+                <field name="name"/>
+                <field name="user_id"/>
+              </group>  
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="method_minori.list_marcas">
+      <field name="name">Marcas de Productos</field>
+      <field name="model">method_minori.marcas</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="user_id"/>
+        </tree>
+      </field>
+    </record>
+
+
+    <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="method_minori.action_window_marcas">
+      <field name="name">Marcas de Productos</field>
+      <field name="res_model">method_minori.marcas</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="method_minori.action_server">
+      <field name="name">method_minori server</field>
+      <field name="model_id" ref="model_method_minori_method_minori"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+    <!--
+    <menuitem name="method_minori" id="method_minori.menu_root"/>
+    -->
+    <!-- menu categories -->
+
+    <menuitem name="Marcas" id="method_minori.marcas" parent="stock.menu_stock_inventory_control"/>
+
+    <!-- actions -->
+    
+    <menuitem name="Marcas" id="method_minori.marcas_list" parent="method_minori.marcas"
+              action="method_minori.action_window_marcas"/>
+
+  </data>
+</odoo>

@@ -26,6 +26,9 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'report/stock_report.xml',
+        'data/marcas_propias.xml'
+
     ],
     # only loaded in demonstration mode
     'demo': [

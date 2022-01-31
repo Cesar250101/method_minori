@@ -57,11 +57,14 @@ class StockReport(models.Model):
                 sum(sq.quantity) AS Stock,
                 pt.marca_id,
                 mmm.user_id
-                FROM stock_quant sq, product_product pp ,product_template pt,method_minori_marcas mmm 
+                FROM stock_quant sq, product_product pp ,product_template pt,method_minori_marcas mmm,stock_location sl  
                 where sq.product_id =pp.id 
                 and pp.product_tmpl_id =pt.id
                 and pt.marca_id =mmm.id
-                group by sq.product_id ,pp.product_tmpl_id ,pt.categ_id ,pt.marca_id,mmm.user_id                
+                and sq.location_id =sl.id 
+                and sl.usage='internal'
+                group by sq.product_id ,pp.product_tmpl_id ,pt.categ_id ,pt.marca_id,mmm.user_id    
+                
             )
         """ % (
             self._table

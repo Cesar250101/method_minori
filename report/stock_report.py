@@ -61,7 +61,6 @@ class StockReport(models.Model):
                 where sq.product_id =pp.id 
                 and pp.product_tmpl_id =pt.id
                 and pt.marca_id =mmm.id
-                and sq.quantity >0
                 group by sq.product_id ,pp.product_tmpl_id ,pt.categ_id ,pt.marca_id,mmm.user_id                
             )
         """ % (

@@ -19,7 +19,12 @@ class Ventas(models.Model):
     price_subtotal = fields.Integer(string='Subtotal Línea')
     marca_id = fields.Many2one(comodel_name='method_minori.marcas', string='Marca')
     categ_id = fields.Many2one(comodel_name='product.category', string='Categoria Producto')
-
+    user_id = fields.Many2one(
+        're.users',
+        string='Usuario',
+        readonly=True,
+    )
+    
     @api.model_cr
     def init(self):
         user=self.env.uid
@@ -36,7 +41,8 @@ class Ventas(models.Model):
                 pol.price_unit,
                 pol.price_subtotal,
                 mmm.id as marca_id,
-                pc.id as categ_id 
+                pc.id as categ_id,
+                mmm.user_id
                 from pos_order po inner join sii_document_class sdc on po.document_class_id =sdc.id
                 inner join pos_order_line pol on po.id =pol.order_id 
                 inner join product_product pp on pol.product_id =pp.id

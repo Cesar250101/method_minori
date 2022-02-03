@@ -18,6 +18,17 @@ class Productos(models.Model):
                 costo=round(p.list_price/1.19)*(1-(m.comision_marca/100))
                 p.standard_price=costo
     
+class ProductosProduct(models.Model):
+    _inherit = 'product.product'
+
+    @api.model
+    def calcular_costo(self):
+        marcar=self.env['method_minori.marcas'].search([])
+        for m in marcar:
+            productos_marca=self.env['product.product'].search([('marca_id','=',m.id)])
+            for p in productos_marca:
+                costo=round(p.lst_price/1.19)*(1-(m.comision_marca/100))
+                p.standard_price=costo
     
     
     

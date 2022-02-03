@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_method_minori_method_minori,method_minori.method_minori,model_method_minori_marcas,purchase.group_purchase_user,1,1,1,1
 access_method_minori_method_minori_stock,method_minori.method_minori_stock,model_method_minori_stock_report,purchase.group_purchase_manager,1,1,1,1
+access_method_minori_method_minori_stock,method_minori.method_minori_stock,model_method_minori_ventas_report,purchase.group_purchase_manager,1,1,1,1

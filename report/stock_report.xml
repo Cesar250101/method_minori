@@ -12,6 +12,18 @@
         </field>
     </record>
 
+    <record id="method_minori.venta_report_pivot" model="ir.ui.view">
+        <field name="model">method_minori.ventas_report</field>
+        <field name="arch" type="xml">
+            <pivot string="Ventas por Marca" disable_linking="True">
+                <field name="marca_id" type="row"/>
+                <field name="product_product_id" type="row"/>
+                <field name="price_subtotal" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+
     <record id="method_minori.stock_report_graph" model="ir.ui.view">
         <field name="model">method_minori.stock_report</field>
         <field name="arch" type="xml">
@@ -21,6 +33,16 @@
             </graph>
         </field>
     </record>
+
+    <record id="method_minori.venta_report_graph" model="ir.ui.view">
+        <field name="model">method_minori.ventas_report</field>
+        <field name="arch" type="xml">
+            <graph string="Ventas por marca">
+                <field name="product_product_id" type="row"/>
+                <field name="price_subtotal" type="measure"/>
+            </graph>
+        </field>
+    </record>    
 
     <record id="method_minori.stock_report_graphsearch" model="ir.ui.view">
         <field name="model">method_minori.stock_report</field>
@@ -36,6 +58,8 @@
         </field>
     </record>
 
+
+
     <record id="method_minori.report_stock_action" model="ir.actions.act_window">
         <field name="name">Stock por Proveedor</field>
         <field name="res_model">method_minori.stock_report</field>
@@ -44,7 +68,16 @@
         <field name="context">{'group_by_no_leaf': 1, 'group_by': []}</field>
     </record>
 
-    <menuitem id="menu_stock_report_root" name="Stock Proveedor"  groups="purchase.group_purchase_user,purchase.group_purchase_manager"/>        
+    <record id="method_minori.report_venta_action" model="ir.actions.act_window">
+        <field name="name">Ventas por marca</field>
+        <field name="res_model">method_minori.ventas_report</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="context">{'group_by_no_leaf': 1, 'group_by': []}</field>        
+    </record>
+
+
+    <menuitem id="menu_stock_report_root" name="Informes Marcas"  groups="purchase.group_purchase_user,purchase.group_purchase_manager"/>        
 
     <menuitem
         id="menu_report_pos_order_payment"
@@ -52,6 +85,12 @@
         action="method_minori.report_stock_action"
         parent="menu_stock_report_root"
         sequence="3"/>
+    <menuitem
+        id="method_minori.informe_ventas"
+        name="Ventas por Marca"
+        action="method_minori.report_venta_action"
+        parent="menu_stock_report_root"
+        sequence="4"/>
 
 
 </odoo>

@@ -40,7 +40,7 @@
       <field name="inherit_id" ref="product.product_template_form_view"/>
       <field name="arch" type="xml">
         <field name="categ_id" position="after">
-              <field name="marca_id"/>
+              <field name="marca_id" required="1" options="{'no_create': True}"/>
         </field> 
       </field>
     </record>

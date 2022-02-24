@@ -23,8 +23,11 @@ class Ventas(models.Model):
         're.users',
         string='Usuario',
         readonly=True,
-    )
-    
+    )    
+    comision = fields.Integer(string='Comisión Marca')
+    comision_marca = fields.Char(string='Comisión Marca')    
+
+
     @api.model_cr
     def init(self):
         user=self.env.uid
@@ -42,15 +45,16 @@ class Ventas(models.Model):
                 pol.price_subtotal,
                 mmm.id as marca_id,
                 pc.id as categ_id,
-                mmm.user_id
+                mmm.user_id,
+                mmm.comision_marca ,
+                round((pol.price_subtotal * (mmm.comision_marca/100))) as comision
                 from pos_order po inner join sii_document_class sdc on po.document_class_id =sdc.id
                 inner join pos_order_line pol on po.id =pol.order_id 
                 inner join product_product pp on pol.product_id =pp.id
                 inner join product_template pt on pp.product_tmpl_id =pt.id  
                 left join res_partner rp on po.partner_id =rp.id
                 inner join method_minori_marcas mmm on pt.marca_id =mmm.id
-                inner join product_category pc on pt.categ_id =pc.id     
-                
+                inner join product_category pc on pt.categ_id =pc.id
             )
         """ % (
             self._table

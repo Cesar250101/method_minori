@@ -38,7 +38,8 @@ class Marcas(models.Model):
 
     name = fields.Char(string='Nombre Marca')
     user_id = fields.Many2one(comodel_name='res.users', string='Usuario')
-    comision_marca = fields.Integer(string='Comisión Marca')
+    comision_marca = fields.Float(string='Comisión Marca')
+    
     
     
 

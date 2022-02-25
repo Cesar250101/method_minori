@@ -27,7 +27,9 @@
         'views/views.xml',
         'views/templates.xml',
         'report/stock_report.xml',
-        'data/marcas_propias.xml'
+        'report/comision_marca.xml',
+        'data/marcas_propias.xml',
+        'wizard/wizard_comision_marcas.xml'
 
     ],
     # only loaded in demonstration mode

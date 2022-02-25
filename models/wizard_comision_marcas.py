@@ -1,0 +1,33 @@
+from odoo import api, models, fields, tools
+import time
+
+
+class ComisionMarcas(models.TransientModel):
+    _name = 'method_minori.wizard_comision_marca'
+    _description = 'Reporte de comisiones por marca'
+
+    marca_id = fields.Many2one(comodel_name='method_minori.marcas',string='Marca')
+
+    fecha_inicio = fields.Date(string='Fecha inicial')
+    fecha_final = fields.Date(string='Fecha Final')
+    
+    
+
+    def _get_domain_comision(self):
+        search_domain = [('date_order','>=',self.fecha_inicio),
+                            ('date_order','<=',self.fecha_final)]
+        return search_domain
+
+    @api.multi
+    def imprimir_pdf(self):
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+            'form': {
+                'fecha_inicial': self.fecha_inicio,
+                'fecha_final': self.fecha_final,
+                'marca_id': self.marca_id,
+            },
+        }
+
+        return self.env.ref('method_minori.comision_marca_report').report_action(self, config=False)

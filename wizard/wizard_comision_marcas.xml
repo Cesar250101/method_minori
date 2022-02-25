@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+      <record id="method_minori.wizard_comision_marca_view" model="ir.ui.view">
+            <field name="name">method.minori.wizard.comision.marca</field>
+            <field name="model">method_minori.wizard_comision_marca</field>
+            <field name="arch" type="xml">
+                <form string="Reportes Comisión Marcas">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="marca_id"/>
+                                <field name="fecha_inicio"/>
+                                <field name="fecha_final"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="imprimir_pdf" type="object" string="Visualizar"/>
+                        <button name="imprimir_excel" type="object" string="Excel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+
+
+        <act_window id="action_reportes_comision_marca" 
+            name="Reporte Comisión Marca" 
+            res_model="method_minori.wizard_comision_marca" 
+            view_mode="form" 
+            target="new"/>
+        
+        <menuitem action="action_reportes_comision_marca" 
+        id="reportes_comision_marca" 
+        parent="menu_stock_report_root" 
+        groups="account.group_account_manager" 
+        sequence="5"/>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<odoo>
+    <report id="method_minori.comision_marca_report"
+            string="Reporte Comisión Marca"
+            model="method_minori.wizard_comision_marca"
+            report_type="qweb-html"
+            file="method_minori.comision_marca_template"
+            name="method_minori.comision_marca_template"/>
+
+    <template id="method_minori.comision_marca_template">
+        <t t-name="l10n_cl_libros_contables.libro_compras">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+            <t t-foreach="docs" t-as="o">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <h3>
+                        <center>Reporte de Comisión por Marca</center>
+                    </h3>
+                    <br/>
+                    <br/>
+                    <div class="row">
+                        <div class="col-6">
+                            Fecha Desde:
+                            <span t-esc="o.fecha_inicio"/>
+                        </div>
+                        <div class="col-6">
+                            Marca:
+                            <span t-esc="o.marca_id.name"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            Fecha Hasta:
+                            <span t-esc="o.fecha_final"/>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <table class="table table-condensed table-bordered" style="font-size: 10px;">
+                        <thead>
+                            <tr>
+                                <th>TipoDocto</th>
+                                <th>NroDocto</th>
+                                <th>Fecha</th>
+                                <th>Marca</th>
+                                <th>Sku</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Pvp</th>
+                                <th>SubtotalNeto</th>
+                                <th>Comisión</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="facturas" t-value="o._comision_mes()"/>
+                                <t t-if="facturas">
+                                    <t t-set="totalneto" t-value="0"/>
+                                    <t t-set="valorcomision" t-value="0"/>
+                                    <t t-foreach="facturas" t-as="f">
+                                        <tr>
+                                            <td><span t-esc="f['tipodocto']"/></td>
+                                            <td><span t-esc="f['nrodocto']"/></td>
+                                            <td><span t-esc="f['fecha']"/></td>
+                                            <td><span t-esc="f['marca']"/></td>
+                                            <td><span t-esc="f['sku']"/></td>
+                                            <td><span t-esc="f['nombreproducto']"/></td>
+                                            <td><span t-esc="f['cantidad']"  t-options='{"widget": "float", "precision": 0}'/></td>
+                                            <td><span t-esc="f['pvp']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                            <td><span t-esc="f['subtotal']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                            <td><span t-esc="f['comision_marca']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                        </tr>
+                                        <t t-set="totalneto" t-value="totalneto+f['subtotal']"/> 
+                                        <t t-set="valorcomision" t-value="valorcomision+f['valorcomision']"/> 
+                                    </t>
+                                </t>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-4">
+                            
+                        </div>
+                        <div class="col-4">
+                            
+                        </div>
+                        <div class="col-4 pull-right">
+                            <t t-if="totalneto">
+                                <t t-set="iva" t-value="totalneto * 0.19"/>
+                                <t t-set="total" t-value="totalneto + iva"/>                                
+                                <t t-set="comision" t-value="valorcomision"/>
+                                <t t-set="ventaneto" t-value="totalneto - comision"/>
+
+                            </t>
+                            <t t-if="totalneto">
+                                <table class="table table-condensed table-bordered" style="font-size: 10px;">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span>Neto</span>
+                                            </td>
+                                            <td>
+                                                <span t-esc="totalneto" t-options='{"widget": "float", "precision": 0}'/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <span>Iva</span>
+                                            </td>
+                                            <td>
+                                                <span t-esc="iva" t-options='{"widget": "float", "precision": 0}'/>
+                                            </td>
+
+                                        </tr>                                    
+                                        <tr>
+                                            <td>
+                                                <span>Total</span>
+                                            </td>
+                                            <td>
+                                                <span t-esc="total" t-options='{"widget": "float", "precision": 0}'/>
+                                            </td>
+
+                                        </tr>                                                                        
+                                        <tr>
+                                            <td>
+                                                <span>Comisión</span>
+                                            </td>
+                                            <td>
+                                                <span t-esc="comision" t-options='{"widget": "float", "precision": 0}'/>
+                                            </td>
+
+                                        </tr>                                                                                                            
+                                        <tr>
+                                            <td>
+                                                <span>Total Ventas Netas</span>
+                                            </td>
+                                            <td>
+                                                <span t-esc="ventaneto" t-options='{"widget": "float", "precision": 0}'/>                                        
+                                            </td>
+
+                                        </tr>                                                                                                            
+
+                                    </tbody>
+                                </table>
+                            </t>
+                        </div>
+
+                    </div>
+                </div>
+            </t>
+            </t>
+        </t>        
+        </t>
+    </template>
+
+
+</odoo>

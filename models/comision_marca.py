@@ -25,6 +25,7 @@ class ReporteComisionMarcas(models.TransientModel):
             and pt.marca_id =mmm.id    
             and mmm.id = {}
             and po.date_order between '2022-01-31' and '2022-02-26'
+            order by po.date_order,po.sii_document_number,pol.product_id
         """.format(self.marca_id.id)
         self._cr.execute(qry)
         _res = self._cr.dictfetchall()

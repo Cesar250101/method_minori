@@ -123,6 +123,7 @@ class StockReport(models.Model):
                 and pt.marca_id =mmm.id
                 and sq.location_id =sl.id 
                 and sl.usage='internal'
+                and pt.active=true
                 group by sq.product_id ,pp.product_tmpl_id ,pt.categ_id ,pt.marca_id,mmm.user_id    
                 
             )

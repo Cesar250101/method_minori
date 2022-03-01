@@ -21,19 +21,14 @@
                     <br/>
                     <div class="row">
                         <div class="col-6">
-                            Fecha Desde:
-                            <span t-esc="o.fecha_inicio"/>
-                        </div>
-                        <div class="col-6">
                             Marca:
                             <span t-esc="o.marca_id.name"/>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-6">
-                            Fecha Hasta:
-                            <span t-esc="o.fecha_final"/>
+                            Periodo:
+                            <span t-esc="o.periodo_id.name"/>
                         </div>
+
                     </div>
                     <br/>
 

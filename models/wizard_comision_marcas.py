@@ -7,10 +7,10 @@ class ComisionMarcas(models.TransientModel):
     _description = 'Reporte de comisiones por marca'
 
     marca_id = fields.Many2one(comodel_name='method_minori.marcas',string='Marca')
-
-    fecha_inicio = fields.Date(string='Fecha inicial')
-    fecha_final = fields.Date(string='Fecha Final')
+    periodo_id = fields.Many2one(comodel_name='method_minori.periodos', string='Periodo')
+    nota = fields.Text(string='Nota',related="periodo_id.nota")
     
+        
     
 
     def _get_domain_comision(self):
@@ -24,9 +24,8 @@ class ComisionMarcas(models.TransientModel):
             'ids': self.ids,
             'model': self._name,
             'form': {
-                'fecha_inicial': self.fecha_inicio,
-                'fecha_final': self.fecha_final,
                 'marca_id': self.marca_id,
+                'periodo': self.periodo_id,
             },
         }
 

@@ -64,6 +64,26 @@
       </field>
     </record>
 
+    <record id="method_minori_view_form_periodo_comision" model="ir.ui.view">
+      <field name="name">Periodos de comisión</field>
+      <field name="model">method_minori.periodos</field>
+      <field name="arch" type="xml">
+        <form string="">
+          <sheet>
+            <group string="Periodo de Comisión">
+              <group>
+                <field name="name"/>
+                <field name="fecha_inicial"/>
+                <field name="fecha_final"/>
+                <field name="nota"/>
+                <field name="qry"/>
+              </group>  
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>    
+
     <!-- explicit list view definition -->
     <record model="ir.ui.view" id="method_minori.list_marcas">
       <field name="name">Marcas de Productos</field>
@@ -76,7 +96,18 @@
       </field>
     </record>
 
-
+    <!-- explicit list view definition -->
+    <record model="ir.ui.view" id="method_minori.periodo_comision_tree">
+      <field name="name">method.minori.periodo.comision.tree</field>
+      <field name="model">method_minori.periodos</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="fecha_inicial"/>
+          <field name="fecha_final"/>
+        </tree>
+      </field>
+    </record>
     <!-- actions opening views on models -->
 
     <record model="ir.actions.act_window" id="method_minori.action_window_marcas">
@@ -85,28 +116,11 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-
-    <!-- server action to the one above -->
-    <!--
-    <record model="ir.actions.server" id="method_minori.action_server">
-      <field name="name">method_minori server</field>
-      <field name="model_id" ref="model_method_minori_method_minori"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": self._name,
-        }
-      </field>
+    <record model="ir.actions.act_window" id="method_minori.action_periodo_comision">
+      <field name="name">Periodos de pago de comisiones</field>
+      <field name="res_model">method_minori.periodos</field>
+      <field name="view_mode">tree,form</field>
     </record>
-    -->
-
-    <!-- Top menu item -->
-    <!--
-    <menuitem name="method_minori" id="method_minori.menu_root"/>
-    -->
-    <!-- menu categories -->
 
     <menuitem name="Marcas" id="method_minori.marcas" parent="stock.menu_stock_inventory_control"/>
 
@@ -114,6 +128,13 @@
     
     <menuitem name="Marcas" id="method_minori.marcas_list" parent="method_minori.marcas"
               action="method_minori.action_window_marcas"/>
+
+    <menuitem name="Periodos Comisión" 
+              id="method_minori.periodos_comision" 
+              parent="point_of_sale.menu_point_config_product"
+              action="method_minori.action_periodo_comision"/>
+
+              
 
   </data>
 </odoo>

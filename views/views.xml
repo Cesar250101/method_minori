@@ -76,7 +76,7 @@
                 <field name="fecha_inicial"/>
                 <field name="fecha_final"/>
                 <field name="nota"/>
-                <field name="qry"/>
+                <field name="qry" invisible="1"/>
               </group>  
             </group>
           </sheet>

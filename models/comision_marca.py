@@ -38,7 +38,7 @@ class PeriodoComision(models.Model):
         El periodo tiene como fechas de corte:
         Fecha Inicial ={}
         Fecha Final ={}
-        """.format(self.fecha_inicial,self.fecha_final)
+        """.format(self.fecha_inicial.strftime('%d-%m-%y') ,self.fecha_final.strftime('%d-%m-%y'))
         
     
 

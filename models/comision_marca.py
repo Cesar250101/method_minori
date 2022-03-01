@@ -25,20 +25,21 @@ class ReporteComisionMarcas(models.TransientModel):
 class PeriodoComision(models.Model):
     _name = 'method_minori.periodos'
 
-    name = fields.Char(string='Nombre del Periodo')
+    name = fields.Char(string='Nombre del Periodo',requiered=True)
     nota = fields.Text(string='Descripción')    
-    fecha_inicial = fields.Datetime(string='Fecha Inicial')
-    fecha_final = fields.Datetime(string='Fecha Final')
+    fecha_inicial = fields.Datetime(string='Fecha Inicial',requiered=True)
+    fecha_final = fields.Datetime(string='Fecha Final',requiered=True)
 
     qry = fields.Text(string='Query', compute='_compute_qry')
 
     @api.onchange('fecha_inicial','fecha_final')
     def _onchange_fecha(self):
-        self.nota="""
-        El periodo tiene como fechas de corte:
-        Fecha Inicial ={}
-        Fecha Final ={}
-        """.format(self.fecha_inicial.strftime('%d-%m-%y') ,self.fecha_final.strftime('%d-%m-%y'))
+        if self.fecha_inicial and self.fecha_final:
+            self.nota="""
+            El periodo tiene como fechas de corte:
+            Fecha Inicial ={}
+            Fecha Final ={}
+            """.format(self.fecha_inicial.strftime('%d-%m-%y') ,self.fecha_final.strftime('%d-%m-%y'))
         
     
 

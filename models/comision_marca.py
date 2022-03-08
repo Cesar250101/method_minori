@@ -46,17 +46,23 @@ class PeriodoComision(models.Model):
     @api.depends('fecha_inicial','fecha_final')
     def _compute_qry(self):
         qry="""select sdc.name as TipoDocto,po.sii_document_number as nrodocto,
-            TO_CHAR(po.date_order , 'YYYY-MM-DD') as fecha,
-            mmm.name as marca,pp.default_code as sku,pt.name as nombreproducto,pol.qty as cantidad,pol.price_unit as pvp,pol.price_subtotal_incl as subtotal,
-            pol.price_subtotal as neto,
-            mmm.comision_marca,mmm.id as id_marca,(pol.price_subtotal*(mmm.comision_marca/100)) as valorcomision 
-            from pos_order po, pos_order_line pol,sii_document_class sdc,method_minori_marcas mmm, product_template pt,product_product pp  
-            where po.id=pol.order_id 
-            and po.document_class_id =sdc.id 
-            and pol.product_id  =pp.id 
-            and pp.product_tmpl_id =pt.id 
-            and pt.marca_id =mmm.id    
-            and mmm.id = {}
+                TO_CHAR(po.date_order , 'YYYY-MM-DD') as fecha,
+                mmm.name as marca,pp.default_code as sku,
+                concat(pt.name,' ',var.variant) as nombreproducto
+                ,pol.qty as cantidad,pol.price_unit as pvp,pol.price_subtotal_incl as subtotal,pol.price_subtotal as neto,
+                mmm.comision_marca,mmm.id as id_marca,(pol.price_subtotal*(mmm.comision_marca/100)) as valorcomision 
+                from pos_order po inner join pos_order_line pol on po.id=pol.order_id
+                inner join sii_document_class sdc on po.document_class_id =sdc.id
+                inner join product_product pp on pol.product_id  =pp.id
+                inner join product_template pt on pp.product_tmpl_id =pt.id
+                inner join method_minori_marcas mmm on pt.marca_id =mmm.id
+                left join (select pavppr.product_product_id, string_agg(pav.name, '-') as variant
+                            from product_product pp , product_attribute_value_product_product_rel pavppr, 
+                            product_attribute_value pav 
+                            where pp.id =pavppr.product_product_id 
+                            and pavppr.product_attribute_value_id =pav.id
+                            group by pavppr.product_product_id) var on pp.id=var.product_product_id 
+            where mmm.id = {}
             and po.date_order between @fecha_inicial and @fecha_final
             order by po.date_order,po.sii_document_number,pol.product_id            
         """

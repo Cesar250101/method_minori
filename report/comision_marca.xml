@@ -13,6 +13,11 @@
             <t t-call="web.external_layout">
             <t t-foreach="docs" t-as="o">
                 <div class="page">
+                    <style>
+                        .rigth {
+                            text-align: rigth;
+                            }
+                    </style>
                     <div class="oe_structure"/>
                     <h3>
                         <center>Reporte de Comisión por Marca</center>
@@ -35,23 +40,25 @@
                     <table class="table table-condensed table-bordered" style="font-size: 10px;">
                         <thead>
                             <tr>
-                                <th>TipoDocto</th>
-                                <th>NroDocto</th>
+                                <th>Tipo Docto</th>
+                                <th>Nro. Docto</th>
                                 <th>Fecha</th>
                                 <th>Marca</th>
                                 <th>Sku</th>
                                 <th>Producto</th>
                                 <th>Cantidad</th>
                                 <th>Pvp</th>
-                                <th>SubtotalNeto</th>
-                                <th>Comisión</th>
+                                <th>Valor Bruto</th>
                             </tr>
                         </thead>
                         <tbody>
                             <t t-set="facturas" t-value="o._comision_mes()"/>
                                 <t t-if="facturas">
                                     <t t-set="totalneto" t-value="0"/>
+                                    <t t-set="total" t-value="0"/>
                                     <t t-set="valorcomision" t-value="0"/>
+                                    <t t-set="porccomision" t-value="0"/>
+                                    <t t-set="factura_bruta" t-value="0"/>
                                     <t t-foreach="facturas" t-as="f">
                                         <tr>
                                             <td><span t-esc="f['tipodocto']"/></td>
@@ -63,10 +70,11 @@
                                             <td><span t-esc="f['cantidad']"  t-options='{"widget": "float", "precision": 0}'/></td>
                                             <td><span t-esc="f['pvp']" t-options='{"widget": "float", "precision": 0}'/></td>
                                             <td><span t-esc="f['subtotal']" t-options='{"widget": "float", "precision": 0}'/></td>
-                                            <td><span t-esc="f['comision_marca']" t-options='{"widget": "float", "precision": 0}'/></td>
                                         </tr>
-                                        <t t-set="totalneto" t-value="totalneto+f['subtotal']"/> 
+                                        <t t-set="totalneto" t-value="totalneto+f['neto']"/> 
+                                        <t t-set="total" t-value="total+f['subtotal']"/> 
                                         <t t-set="valorcomision" t-value="valorcomision+f['valorcomision']"/> 
+                                        <t t-set="porccomision" t-value="f['comision_marca']"/> 
                                     </t>
                                 </t>
                         </tbody>
@@ -81,45 +89,46 @@
                         <div class="col-4 pull-right">
                             <t t-if="totalneto">
                                 <t t-set="iva" t-value="totalneto * 0.19"/>
-                                <t t-set="total" t-value="totalneto + iva"/>                                
                                 <t t-set="comision" t-value="valorcomision"/>
                                 <t t-set="ventaneto" t-value="totalneto - comision"/>
-
+                                <t t-set="factura_bruta" t-value="ventaneto  * 1.19"/>
+                                
                             </t>
                             <t t-if="totalneto">
                                 <table class="table table-condensed table-bordered" style="font-size: 10px;">
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <span>Neto</span>
+                                                <span>Total Neto</span>
                                             </td>
-                                            <td>
+                                            <td class="rigth">
                                                 <span t-esc="totalneto" t-options='{"widget": "float", "precision": 0}'/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <span>Iva</span>
+                                                <span>Iva 19%</span>
                                             </td>
-                                            <td>
+                                            <td class="rigth">
                                                 <span t-esc="iva" t-options='{"widget": "float", "precision": 0}'/>
                                             </td>
 
                                         </tr>                                    
                                         <tr>
                                             <td>
-                                                <span>Total</span>
+                                                <span>Total Venta Bruta</span>
                                             </td>
-                                            <td>
+                                            <td class="rigth">
                                                 <span t-esc="total" t-options='{"widget": "float", "precision": 0}'/>
                                             </td>
 
                                         </tr>                                                                        
                                         <tr>
                                             <td>
-                                                <span>Comisión</span>
+                                                <span t-esc="porccomision" t-options='{"widget": "float", "precision": 0}'/>%
+                                                <span> Margen</span>
                                             </td>
-                                            <td>
+                                            <td class="rigth">
                                                 <span t-esc="comision" t-options='{"widget": "float", "precision": 0}'/>
                                             </td>
 
@@ -128,12 +137,20 @@
                                             <td>
                                                 <span>Total Ventas Netas</span>
                                             </td>
-                                            <td>
+                                            <td class="rigth">
                                                 <span t-esc="ventaneto" t-options='{"widget": "float", "precision": 0}'/>                                        
                                             </td>
 
                                         </tr>                                                                                                            
+                                        <tr>
+                                            <td>
+                                                <span>Factura Bruta</span>
+                                            </td>
+                                            <td class="rigth">
+                                                <span t-esc="factura_bruta" t-options='{"widget": "float", "precision": 0}'/>                                        
+                                            </td>
 
+                                        </tr>
                                     </tbody>
                                 </table>
                             </t>

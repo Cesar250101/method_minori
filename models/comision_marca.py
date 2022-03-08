@@ -47,7 +47,8 @@ class PeriodoComision(models.Model):
     def _compute_qry(self):
         qry="""select sdc.name as TipoDocto,po.sii_document_number as nrodocto,
             TO_CHAR(po.date_order , 'YYYY-MM-DD') as fecha,
-            mmm.name as marca,pp.default_code as sku,pt.name as nombreproducto,pol.qty as cantidad,pol.price_unit as pvp,pol.price_subtotal as subtotal,
+            mmm.name as marca,pp.default_code as sku,pt.name as nombreproducto,pol.qty as cantidad,pol.price_unit as pvp,pol.price_subtotal_incl as subtotal,
+            pol.price_subtotal as neto,
             mmm.comision_marca,mmm.id as id_marca,(pol.price_subtotal*(mmm.comision_marca/100)) as valorcomision 
             from pos_order po, pos_order_line pol,sii_document_class sdc,method_minori_marcas mmm, product_template pt,product_product pp  
             where po.id=pol.order_id 

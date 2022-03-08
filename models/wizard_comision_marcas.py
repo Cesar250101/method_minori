@@ -30,3 +30,18 @@ class ComisionMarcas(models.TransientModel):
         }
 
         return self.env.ref('method_minori.comision_marca_report').report_action(self, config=False)
+
+    @api.multi
+    def imprimir_excel(self):
+        data = {
+            'ids': self.ids,
+            'model': self._name,
+            'form': {
+                'marca_id': self.marca_id,
+                'periodo': self.periodo_id,
+            },
+        }
+        datos=self._comision_mes()
+        print(datos)
+
+

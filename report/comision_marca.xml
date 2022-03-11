@@ -47,8 +47,8 @@
                                 <th>Sku</th>
                                 <th>Producto</th>
                                 <th>Cantidad</th>
+                                <th>%Descuento</th>
                                 <th>Pvp</th>
-                                <th>Valor Bruto</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,7 +68,7 @@
                                             <td><span t-esc="f['sku']"/></td>
                                             <td><span t-esc="f['nombreproducto']"/></td>
                                             <td><span t-esc="f['cantidad']"  t-options='{"widget": "float", "precision": 0}'/></td>
-                                            <td><span t-esc="f['pvp']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                            <td><span t-esc="f['discount']" t-options='{"widget": "float", "precision": 0}'/></td>
                                             <td><span t-esc="f['subtotal']" t-options='{"widget": "float", "precision": 0}'/></td>
                                         </tr>
                                         <t t-set="totalneto" t-value="totalneto+f['neto']"/> 
@@ -97,7 +97,7 @@
                             <t t-if="totalneto">
                                 <table class="table table-condensed table-bordered" style="font-size: 10px;">
                                     <tbody>
-                                        <tr>
+                                        <!-- <tr>
                                             <td>
                                                 <span>Total Neto</span>
                                             </td>
@@ -113,7 +113,7 @@
                                                 <span t-esc="iva" t-options='{"widget": "float", "precision": 0}'/>
                                             </td>
 
-                                        </tr>                                    
+                                        </tr>                                     -->
                                         <tr>
                                             <td>
                                                 <span>Total Venta Bruta</span>

@@ -49,7 +49,7 @@ class PeriodoComision(models.Model):
                 TO_CHAR(po.date_order , 'YYYY-MM-DD') as fecha,
                 mmm.name as marca,pp.default_code as sku,
                 concat(pt.name,' ',var.variant) as nombreproducto
-                ,pol.qty as cantidad,pol.price_unit as pvp,pol.price_subtotal_incl as subtotal,pol.price_subtotal as neto,
+                ,pol.qty as cantidad,pol.price_unit as pvp,pol.discount,pol.price_subtotal_incl as subtotal,pol.price_subtotal as neto,
                 mmm.comision_marca,mmm.id as id_marca,(pol.price_subtotal*(mmm.comision_marca/100)) as valorcomision 
                 from pos_order po inner join pos_order_line pol on po.id=pol.order_id
                 inner join sii_document_class sdc on po.document_class_id =sdc.id

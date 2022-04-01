@@ -8,7 +8,7 @@
                 <field name="marca_id" type="row"/>
                 <field name="product_id" type="row"/>                
                 <field name="stock" type="measure"/>
-                <field name="precio_venta" type="row"/>
+                <field name="precio_venta" type="measure"/>
 
             </pivot>
         </field>

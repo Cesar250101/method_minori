@@ -100,6 +100,8 @@ class StockReport(models.Model):
         string='Usuario',
         readonly=True,
     )
+    precio_venta = fields.Integer(string='Precio de Venta')
+    
 
 
 
@@ -116,7 +118,7 @@ class StockReport(models.Model):
                 pt.categ_id AS product_categ_id,
                 sum(sq.quantity) AS Stock,
                 pt.marca_id,
-                mmm.user_id
+                mmm.user_id,pt.list_price AS precio_venta
                 FROM stock_quant sq, product_product pp ,product_template pt,method_minori_marcas mmm,stock_location sl  
                 where sq.product_id =pp.id 
                 and pp.product_tmpl_id =pt.id

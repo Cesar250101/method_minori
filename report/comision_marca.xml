@@ -90,8 +90,10 @@
                             <t t-if="totalneto">
                                 <t t-set="iva" t-value="totalneto * 0.19"/>
                                 <t t-set="comision" t-value="valorcomision"/>
-                                <t t-set="ventaneto" t-value="round((total / 1.19)) - comision"/>
-                                <t t-set="factura_bruta" t-value="round(ventaneto  * 1.19)"/>
+                                <t t-set="ventaneto" t-value="round((total / 1.19))"/>
+                                <t t-set="ventaneto_sin_comision" t-value="total-(iva+comision)"/>
+                                <t t-set="factura_bruta" t-value="round(ventaneto_sin_comision  * 1.19)"/>
+
                                 
                             </t>
                             <t t-if="totalneto">
@@ -122,7 +124,26 @@
                                                 <span t-esc="total" t-options='{"widget": "float", "precision": 0}'/>
                                             </td>
 
-                                        </tr>                                                                        
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <span>IVA 19%</span>
+                                            </td>
+                                            <td class="rigth">
+                                                <span t-esc="iva" t-options='{"widget": "float", "precision": 0}'/>
+                                            </td>
+
+                                        </tr>                                                                                                                
+                                        <tr>
+                                            <td>
+                                                <span>Total Ventas Netas</span>
+                                            </td>
+                                            <td class="rigth">
+                                                <span t-esc="ventaneto" t-options='{"widget": "float", "precision": 0}'/>
+                                            </td>
+
+                                        </tr>                                                                                                                
+
                                         <tr>
                                             <td>
                                                 <span t-esc="porccomision" t-options='{"widget": "float", "precision": 0}'/>%
@@ -138,7 +159,7 @@
                                                 <span>Total Ventas Netas</span>
                                             </td>
                                             <td class="rigth">
-                                                <span t-esc="ventaneto" t-options='{"widget": "float", "precision": 0}'/>                                        
+                                                <span t-esc="ventaneto_sin_comision" t-options='{"widget": "float", "precision": 0}'/>                                        
                                             </td>
 
                                         </tr>                                                                                                            

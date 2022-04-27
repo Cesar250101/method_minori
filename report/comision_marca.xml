@@ -88,7 +88,7 @@
                         </div>
                         <div class="col-4 pull-right">
                             <t t-if="totalneto">
-                                <t t-set="iva" t-value="totalneto * 0.19"/>
+                                <t t-set="iva" t-value="total-(total / 1.19)"/>
                                 <t t-set="comision" t-value="valorcomision"/>
                                 <t t-set="ventaneto" t-value="round((total / 1.19))"/>
                                 <t t-set="ventaneto_sin_comision" t-value="total-(iva+comision)"/>
@@ -99,23 +99,6 @@
                             <t t-if="totalneto">
                                 <table class="table table-condensed table-bordered" style="font-size: 10px;">
                                     <tbody>
-                                        <!-- <tr>
-                                            <td>
-                                                <span>Total Neto</span>
-                                            </td>
-                                            <td class="rigth">
-                                                <span t-esc="totalneto" t-options='{"widget": "float", "precision": 0}'/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <span>Iva 19%</span>
-                                            </td>
-                                            <td class="rigth">
-                                                <span t-esc="iva" t-options='{"widget": "float", "precision": 0}'/>
-                                            </td>
-
-                                        </tr>                                     -->
                                         <tr>
                                             <td>
                                                 <span>Total Venta Bruta</span>

@@ -90,8 +90,8 @@
                             <t t-if="totalneto">
                                 <t t-set="iva" t-value="totalneto * 0.19"/>
                                 <t t-set="comision" t-value="valorcomision"/>
-                                <t t-set="ventaneto" t-value="(total / 1.19) - comision"/>
-                                <t t-set="factura_bruta" t-value="ventaneto  * 1.19"/>
+                                <t t-set="ventaneto" t-value="round((total / 1.19)) - comision"/>
+                                <t t-set="factura_bruta" t-value="round(ventaneto  * 1.19)"/>
                                 
                             </t>
                             <t t-if="totalneto">

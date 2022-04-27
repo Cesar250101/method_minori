@@ -89,8 +89,8 @@
                         <div class="col-4 pull-right">
                             <t t-if="totalneto">
                                 <t t-set="iva" t-value="total-(total / 1.19)"/>
-                                <t t-set="comision" t-value="valorcomision"/>
                                 <t t-set="ventaneto" t-value="round((total / 1.19))"/>
+                                <t t-set="comision" t-value="ventaneto*(porccomision / 100)"/>                                
                                 <t t-set="ventaneto_sin_comision" t-value="total-(iva+comision)"/>
                                 <t t-set="factura_bruta" t-value="round(ventaneto_sin_comision  * 1.19)"/>
 

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from email.policy import default
+from tkinter.tix import Tree
 from odoo import models, fields, api
 
 
@@ -39,6 +41,8 @@ class Marcas(models.Model):
     name = fields.Char(string='Nombre Marca')
     user_id = fields.Many2one(comodel_name='res.users', string='Usuario')
     comision_marca = fields.Float(string='Comisión Marca')
+    active = fields.Boolean(string='Activo',default=True)
+    
     
     
     

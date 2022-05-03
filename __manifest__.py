@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','stock','purchase','sale'],
+    'depends': ['base','stock','purchase','sale','l10n_cl_dte_point_of_sale'],
 
     # always loaded
     'data': [

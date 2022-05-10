@@ -66,8 +66,8 @@ class ComisionMarcasExcel(models.AbstractModel):
         porc_comision=0
         comision=0
         factura_bruta=0
-        sheet.write(row-2,col,'VENTAS '+ data['form_data']['periodo_id'][1],bold)
-        sheet.write(row-2,col+3,'MARCA '+ data['form_data']['marca_id'][1],bold)
+        sheet.write(row-2,col,'VENTAS :'+ data['form_data']['periodo_id'][1],bold)
+        sheet.write(row-2,col+3,'MARCA :'+ data['form_data']['marca_id'][1],bold)
         sheet.write(row,col,'Tipodocto',bold)
         sheet.write(row,col+1,'NroDocto',bold)
         sheet.write(row,col+2,'Fecha',bold)

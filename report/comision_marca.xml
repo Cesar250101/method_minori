@@ -1,5 +1,18 @@
 <?xml version="1.0"?>
 <odoo>
+<!--EXCEL-->
+
+    <!-- model.name action window -->
+    <record id="report_comision_marcas_xlsx" model="ir.actions.report">
+        <field name="name">Reporte Comisión Marcas Excel</field>
+        <field name="model">method_minori.wizard_comision_marca</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">method_minori.report_comision_excel</field>
+        <field name="report_file">method_minori.report_comision_excel</field>
+        <field name="binding_type">report</field>
+    </record>
+
+<!--PDF-->    
     <report id="method_minori.comision_marca_report"
             string="Reporte Comisión Marca"
             model="method_minori.wizard_comision_marca"

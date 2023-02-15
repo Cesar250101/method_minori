@@ -26,7 +26,8 @@ class Ventas(models.Model):
     )    
     comision = fields.Integer(string='Comisión Marca')
     comision_marca = fields.Char(string='Comisión Marca')    
-
+    session_id = fields.Many2one(comodel_name='pos.session', string='Sesión')
+    sucursal_id = fields.Many2one(comodel_name='pos.config', string='Sucursal')
 
     @api.model_cr
     def init(self):
@@ -47,14 +48,18 @@ class Ventas(models.Model):
                 pc.id as categ_id,
                 mmm.user_id,
                 mmm.comision_marca ,
-                round((pol.price_subtotal * (mmm.comision_marca/100))) as comision
+                round((pol.price_subtotal * (mmm.comision_marca/100))) as comision,
+                ps.id as session_id , 
+                pc2.id as sucursal_id
                 from pos_order po inner join sii_document_class sdc on po.document_class_id =sdc.id
                 inner join pos_order_line pol on po.id =pol.order_id 
                 inner join product_product pp on pol.product_id =pp.id
                 inner join product_template pt on pp.product_tmpl_id =pt.id  
                 left join res_partner rp on po.partner_id =rp.id
                 inner join method_minori_marcas mmm on pt.marca_id =mmm.id
-                inner join product_category pc on pt.categ_id =pc.id
+                inner join product_category pc on pt.categ_id =pc.id 
+                inner join pos_session ps on po.session_id =ps.id 
+                inner join pos_config pc2 on ps.config_id =pc2.id  
             )
         """ % (
             self._table

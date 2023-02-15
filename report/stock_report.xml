@@ -20,9 +20,10 @@
             <pivot string="Ventas por Marca" disable_linking="True">
                 <field name="marca_id" type="row"/>
                 <field name="product_product_id" type="row"/>
+                <field name="product_product_id" type="row"/>
                 <field name="cantidad" type="measure"/>                
                 <field name="price_subtotal" type="measure"/>
-                <field name="comision" type="measure"/>
+                <field name="sucursal_id" type="col"/>
                 
             </pivot>
         </field>

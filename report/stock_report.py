@@ -106,10 +106,11 @@ class StockReport(models.Model):
         readonly=True,
     )
     precio_venta = fields.Integer(string='Precio de Venta')
-    
-
-
-
+    location_id = fields.Many2one(
+        'stock.location',
+        string='Ubicacion Stock',
+        readonly=True,
+    )
 
     @api.model_cr
     def init(self):
@@ -121,17 +122,17 @@ class StockReport(models.Model):
                 sq.product_id AS product_id,
                 pp.product_tmpl_id ,
                 pt.categ_id AS product_categ_id,
-                sum(sq.quantity) AS Stock,
+                sq.quantity AS Stock,
                 pt.marca_id,
-                mmm.user_id,pt.list_price AS precio_venta
+                mmm.user_id,pt.list_price AS precio_venta,
+                sl.id as location_id
                 FROM stock_quant sq, product_product pp ,product_template pt,method_minori_marcas mmm,stock_location sl  
                 where sq.product_id =pp.id 
                 and pp.product_tmpl_id =pt.id
                 and pt.marca_id =mmm.id
                 and sq.location_id =sl.id 
                 and sl.usage='internal'
-                and pt.active=true
-                group by sq.product_id ,pp.product_tmpl_id ,pt.categ_id ,pt.marca_id,mmm.user_id,pt.list_price    
+                and pt.active=true    
                 
             )
         """ % (

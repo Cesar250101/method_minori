@@ -34,6 +34,7 @@
         <field name="arch" type="xml">
             <graph string="Point of Sale Payment Analysis">
                 <field name="product_id" type="row"/>
+                <field name="location_id" type="col"/>
                 <field name="stock" type="measure"/>
             </graph>
         </field>

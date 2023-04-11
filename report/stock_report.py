@@ -67,6 +67,73 @@ class Ventas(models.Model):
 
         ))
 
+# Informe de ventas por marcar con segmentación de marcas propias
+class MarcasPropias(models.Model):
+    _name = 'method_minori.report_marcas_propias'
+    _description = "Ventas por marca y segmentación por marcas propias y no propias"
+    _auto = False
+    _order = 'product_id desc'
+
+    tipodocto = fields.Char(string='Tipo Documento')    
+    date_order = fields.Date(string='Fecha Orden')    
+    cliente_id = fields.Many2one(comodel_name='res.partner', string='Cliente')
+    product_product_id = fields.Many2one(comodel_name='product.product', string='Producto')
+    product_template_id = fields.Many2one(comodel_name='product.template', string='Plantilla Producto')
+    cantidad = fields.Integer(string='Cantidad')    
+    price_unit = fields.Integer(string='Precio Unitario')
+    neto = fields.Integer(string='Neto Línea')
+    marca_id = fields.Many2one(comodel_name='method_minori.marcas', string='Marca')
+    categ_id = fields.Many2one(comodel_name='product.category', string='Categoria Producto')
+    user_id = fields.Many2one(
+        're.users',
+        string='Usuario',
+        readonly=True,
+    )    
+    comision = fields.Integer(string='Comisión Marca')
+    comision_marca = fields.Char(string='Comisión Marca')    
+    session_id = fields.Many2one(comodel_name='pos.session', string='Sesión')
+    sucursal_id = fields.Many2one(comodel_name='pos.config', string='Sucursal')
+    es_propia = fields.Boolean(string='Es marca propia?')
+
+    @api.model_cr
+    def init(self):
+        user=self.env.uid
+        tools.drop_view_if_exists(self._cr, self._table)
+        self._cr.execute("""
+            CREATE OR REPLACE VIEW %s AS (SELECT 
+                                            ROW_NUMBER() OVER() AS id,
+                                            sdc.name as tipodocto,
+                                            po.date_order,
+                                            rp.id as cliente_id,
+                                            pp.id as product_product_id,
+                                            pt.id as product_template_id,
+                                            pol.qty as cantidad,
+                                            pol.price_unit,
+                                            pol.price_subtotal as neto,
+                                            mmm.id as marca_id,
+                                            pc.id as categ_id,
+                                            mmm.user_id,
+                                            mmm.comision_marca ,
+                                            round((pol.price_subtotal * (mmm.comision_marca/100))) as comision,
+                                            ps.id as session_id , 
+                                            pc2.id as sucursal_id,
+                                            mmm.es_propia
+                                            from pos_order po left join sii_document_class sdc on po.document_class_id =sdc.id
+                                            inner join pos_order_line pol on po.id =pol.order_id 
+                                            inner join product_product pp on pol.product_id =pp.id
+                                            inner join product_template pt on pp.product_tmpl_id =pt.id  
+                                            left join res_partner rp on po.partner_id =rp.id
+                                            left join method_minori_marcas mmm on pt.marca_id =mmm.id
+                                            left join product_category pc on pt.categ_id =pc.id 
+                                            left join pos_session ps on po.session_id =ps.id 
+                                            left join pos_config pc2 on ps.config_id =pc2.id 
+  
+            )
+        """ % (
+            self._table
+            #self._select(), self._from(),user, self._group_by(), self._having(),
+
+        ))
 
 
 class StockReport(models.Model):

@@ -40,6 +40,8 @@ class Marcas(models.Model):
     user_id = fields.Many2one(comodel_name='res.users', string='Usuario')
     comision_marca = fields.Float(string='Comisión Marca')
     active = fields.Boolean(string='Activo', default=True)
+    es_propia = fields.Boolean(string='Es marca propia?')
+    
     
     
 

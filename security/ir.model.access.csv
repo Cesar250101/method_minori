@@ -5,4 +5,6 @@ access_method_minori_method_minori_stock,method_minori.method_minori_stock,model
 access_method_minori_wizard_comision_marca,method.minori.wizard.comision.marca,model_method_minori_wizard_comision_marca,purchase.group_purchase_user,1,1,1,1
 access_method_minori_wizard_periodos,method.minori.wizard.periodos,model_method_minori_periodos,purchase.group_purchase_manager,1,1,1,1
 informe_ventas_marcas_propias,Reporte marcas propias,method_minori.model_method_minori_report_marcas_propias,group_proveedores_marcas,1,1,1,1
+informe_ventas_dias,Ventas por día,method_minori.model_method_minori_ventas_dia_report,group_proveedores_marcas,1,1,1,1
+informe_notas_credito,Notas de Crédito Emitidas,method_minori.model_method_minori_notas_credito_report,group_proveedores_marcas,1,1,1,1
 

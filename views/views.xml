@@ -11,6 +11,18 @@
             </search>
         </field>
     </record>
+    
+<!-- Vista search para ventas por marcas propias y externas -->
+    <record id="ventas_dia_search" model="ir.ui.view">
+        <field name="name">Ventas por día</field>
+        <field name="model">method_minori.ventas_dia_report</field>
+        <field name="arch" type="xml">           
+            <search>              
+                <filter string="Marcas Propias" name="marcas_propias" domain="[('es_propia','=',True)]"/>
+                <filter string="Marcas Externas" name="marcas_externas" domain="[('es_propia','=',False)]"/>
+            </search>
+        </field>
+    </record>
 
 
     <record id="method_minori.product_template_search_view" model="ir.ui.view">

@@ -82,6 +82,7 @@ class MarcasPropias(models.Model):
     cantidad = fields.Integer(string='Cantidad')    
     price_unit = fields.Integer(string='Precio Unitario')
     neto = fields.Integer(string='Neto Línea')
+    bruto = fields.Integer(string='Bruto Línea')
     marca_id = fields.Many2one(comodel_name='method_minori.marcas', string='Marca')
     categ_id = fields.Many2one(comodel_name='product.category', string='Categoria Producto')
     user_id = fields.Many2one(
@@ -110,6 +111,7 @@ class MarcasPropias(models.Model):
                                             pol.qty as cantidad,
                                             pol.price_unit,
                                             pol.price_subtotal as neto,
+                                            pol.price_subtotal_incl as bruto,
                                             mmm.id as marca_id,
                                             pc.id as categ_id,
                                             mmm.user_id,

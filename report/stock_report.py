@@ -180,6 +180,8 @@ class StockReport(models.Model):
         string='Ubicacion Stock',
         readonly=True,
     )
+    nombre_producto = fields.Char(string='Nombre Producto')
+    sku = fields.Char(string='SKU')
 
     @api.model_cr
     def init(self):
@@ -187,22 +189,23 @@ class StockReport(models.Model):
         tools.drop_view_if_exists(self._cr, self._table)
         self._cr.execute("""
             CREATE OR REPLACE VIEW %s AS (SELECT 
-                ROW_NUMBER() OVER() AS id,
-                sq.product_id AS product_id,
-                pp.product_tmpl_id ,
-                pt.categ_id AS product_categ_id,
-                sq.quantity AS Stock,
-                pt.marca_id,
-                mmm.user_id,pt.list_price AS precio_venta,
-                sl.id as location_id
-                FROM stock_quant sq, product_product pp ,product_template pt,method_minori_marcas mmm,stock_location sl  
-                where sq.product_id =pp.id 
-                and pp.product_tmpl_id =pt.id
-                and pt.marca_id =mmm.id
-                and sq.location_id =sl.id 
-                and sl.usage='internal'
-                and pt.active=true    
-                
+                    ROW_NUMBER() OVER() AS id,
+                    sq.product_id AS product_id,
+                    pp.product_tmpl_id ,
+                    pt.categ_id AS product_categ_id,
+                    sq.quantity AS Stock,
+                    pt.marca_id,
+                    mmm.user_id,pt.list_price AS precio_venta,
+                    sl.id as location_id,
+                    pt.name as nombre_producto,
+                    pp.default_code as sku
+                    FROM stock_quant sq, product_product pp ,product_template pt,method_minori_marcas mmm,stock_location sl  
+                    where sq.product_id =pp.id 
+                    and pp.product_tmpl_id =pt.id
+                    and pt.marca_id =mmm.id
+                    and sq.location_id =sl.id 
+                    and sl.usage='internal'
+                    and pt.active=true                     
             )
         """ % (
             self._table

@@ -31,6 +31,7 @@ class Ventas(models.Model):
 
     @api.model_cr
     def init(self):
+        # self.env['method_minori.ventas_report'].search([]).unlink()        
         user=self.env.uid
         tools.drop_view_if_exists(self._cr, self._table)
         self._cr.execute("""
@@ -205,7 +206,7 @@ class StockReport(models.Model):
                     and pt.marca_id =mmm.id
                     and sq.location_id =sl.id 
                     and sl.usage='internal'
-                    and pt.active=true                     
+                    and pp.active=true                     
             )
         """ % (
             self._table

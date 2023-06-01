@@ -4,7 +4,7 @@
 from odoo import api, models, fields, tools
 
 class Ventas(models.Model):
-    _name = 'method_minori.ventas_report'
+    _name = 'method_minori.ventas_report_marcas'
     _description = "Ventas por marca"
     _auto = False
     _order = 'product_id desc'
@@ -20,7 +20,7 @@ class Ventas(models.Model):
     marca_id = fields.Many2one(comodel_name='method_minori.marcas', string='Marca')
     categ_id = fields.Many2one(comodel_name='product.category', string='Categoria Producto')
     user_id = fields.Many2one(
-        're.users',
+        'res.users',
         string='Usuario',
         readonly=True,
     )    
@@ -31,7 +31,6 @@ class Ventas(models.Model):
 
     @api.model_cr
     def init(self):
-        # self.env['method_minori.ventas_report'].search([]).unlink()        
         user=self.env.uid
         tools.drop_view_if_exists(self._cr, self._table)
         self._cr.execute("""

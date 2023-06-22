@@ -20,12 +20,13 @@ class Ventas(models.Model):
         user=self.env.uid
         tools.drop_view_if_exists(self._cr, self._table)
         self._cr.execute("""
-            CREATE OR REPLACE VIEW %s AS (SELECT 
+            CREATE OR REPLACE VIEW %s AS (
                     ROW_NUMBER() OVER() AS id,
                     date(po.date_order) as fecha_dia,
                     EXTRACT(day FROM po.date_order) as dia,
-                    sum(po.amount_total) as total,sum(po.amount_tax) as impuesto,
-                    sum(po.amount_total-po.amount_tax) as neto,
+                    sum(pol.price_subtotal_incl) as total,
+                    sum(pol.price_subtotal_incl-pol.price_subtotal) as impuesto,
+                    sum(pol.price_subtotal) as neto,
                     max(po.sii_document_number)  as Ultimo,min(po.sii_document_number) as Primero,
                     mmm.es_propia 
                     from pos_order po left join sii_document_class sdc on po.document_class_id =sdc.id

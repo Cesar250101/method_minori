@@ -9,6 +9,13 @@ class Productos(models.Model):
     marca_id = fields.Many2one(comodel_name='method_minori.marcas', string='Marca')
     responsible_id = fields.Many2one(comodel_name='res.users',string='Responsable',related='marca_id.user_id')
 
+    @api.onchange('marca_id')
+    def _onchange_marca_id(self):
+        pos_categ=self.env['pos.category'].search([('name','=',self.marca_id.name)],limit=1)
+        if pos_categ:
+            self.available_in_pos=True
+            self.pos_categ_id=pos_categ.id
+
     @api.model
     def calcular_costo(self):
         marcar=self.env['method_minori.marcas'].search([])

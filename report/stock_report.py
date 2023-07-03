@@ -9,7 +9,8 @@ class Ventas(models.Model):
     _auto = False
     _order = 'product_id desc'
 
-    tipodocto = fields.Char(string='Tipo Documento')    
+    tipodocto = fields.Char(string='Tipo Documento')  
+    origen = fields.Char(string='Origen')  
     date_order = fields.Date(string='Fecha Orden')    
     cliente_id = fields.Many2one(comodel_name='res.partner', string='Cliente')
     product_product_id = fields.Many2one(comodel_name='product.product', string='Producto')
@@ -35,7 +36,7 @@ class Ventas(models.Model):
         tools.drop_view_if_exists(self._cr, self._table)
         self._cr.execute("""
             CREATE OR REPLACE VIEW %s AS (SELECT 
-                ROW_NUMBER() OVER() AS id,
+                ROW_NUMBER() OVER() AS id,'POS' as origen,
                 sdc.name as tipodocto,
                 po.date_order,
                 rp.id as cliente_id,
@@ -60,6 +61,31 @@ class Ventas(models.Model):
                 left join product_category pc on pt.categ_id =pc.id 
                 left join pos_session ps on po.session_id =ps.id 
                 left join pos_config pc2 on ps.config_id =pc2.id  
+                union 
+                SELECT 
+                ROW_NUMBER() OVER() AS id,'Ventas' as origen,
+                sdc.name as tipodocto,
+                po.date_invoice,
+                rp.id as cliente_id,
+                pp.id as product_product_id,
+                pt.id as product_template_id,
+                pol.quantity as cantidad,
+                pol.price_unit,
+                pol.price_subtotal as neto,
+                mmm.id as marca_id,
+                pc.id as categ_id,
+                mmm.user_id,
+                mmm.comision_marca ,
+                round((pol.price_subtotal * (mmm.comision_marca/100))) as comision,
+                0 as session_id , 
+                0 as sucursal_id
+                from account_invoice po left join sii_document_class sdc on po.document_class_id =sdc.id
+                inner join account_invoice_line pol on po.id =pol.invoice_id 
+                inner join product_product pp on pol.product_id =pp.id
+                inner join product_template pt on pp.product_tmpl_id =pt.id  
+                left join res_partner rp on po.partner_id =rp.id
+                left join method_minori_marcas mmm on pt.marca_id =mmm.id
+                left join product_category pc on pt.categ_id =pc.id
             )
         """ % (
             self._table
@@ -74,7 +100,8 @@ class MarcasPropias(models.Model):
     _auto = False
     _order = 'product_id desc'
 
-    tipodocto = fields.Char(string='Tipo Documento')    
+    tipodocto = fields.Char(string='Tipo Documento')
+    origen = fields.Char(string='Origen')    
     date_order = fields.Date(string='Fecha Orden')    
     cliente_id = fields.Many2one(comodel_name='res.partner', string='Cliente')
     product_product_id = fields.Many2one(comodel_name='product.product', string='Producto')
@@ -104,6 +131,7 @@ class MarcasPropias(models.Model):
             CREATE OR REPLACE VIEW %s AS (SELECT 
                     ROW_NUMBER() OVER() AS id,
                     sdc.name as tipodocto,
+                    'POS' as origen,
                     po.date_order,
                     rp.id as cliente_id,
                     pp.id as product_product_id,
@@ -133,6 +161,7 @@ class MarcasPropias(models.Model):
                     SELECT 
                     ROW_NUMBER() OVER() AS id,
                     sdc.name as tipodocto,
+                    'Ventas' as origen,
                     po.date_invoice,
                     rp.id as cliente_id,
                     pp.id as product_product_id,

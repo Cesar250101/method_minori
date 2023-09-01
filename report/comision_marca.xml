@@ -62,6 +62,7 @@
                                 <th>Cantidad</th>
                                 <th>%Descuento</th>
                                 <th>Pvp</th>
+                                <th>Sucursal</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,6 +84,7 @@
                                             <td><span t-esc="f['cantidad']"  t-options='{"widget": "float", "precision": 0}'/></td>
                                             <td><span t-esc="f['discount']" t-options='{"widget": "float", "precision": 0}'/></td>
                                             <td><span t-esc="f['subtotal']" t-options='{"widget": "float", "precision": 0}'/></td>
+                                            <td><span t-esc="f['sucursal']"/></td>
                                         </tr>
                                         <t t-set="totalneto" t-value="totalneto+f['neto']"/> 
                                         <t t-set="total" t-value="total+f['subtotal']"/> 

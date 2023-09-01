@@ -15,6 +15,7 @@ class ComisionMarcas(models.TransientModel):
     marca_id = fields.Many2one(comodel_name='method_minori.marcas',string='Marca')
     periodo_id = fields.Many2one(comodel_name='method_minori.periodos', string='Periodo')
     nota = fields.Text(string='Nota',related="periodo_id.nota")
+    pos_ids = fields.Many2many(comodel_name='pos.config', string='Sucursal')
     
         
     
@@ -26,12 +27,16 @@ class ComisionMarcas(models.TransientModel):
 
     @api.multi
     def imprimir_pdf(self):
+        pos_ids=[]
+        for i in self.pos_ids:
+            pos_ids.append(i.id)
         data = {
             'ids': self.ids,
             'model': self._name,
             'form': {
                 'marca_id': self.marca_id,
                 'periodo': self.periodo_id,
+                'sucursales':pos_ids
             },
         }
 

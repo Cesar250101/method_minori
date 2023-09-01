@@ -21,7 +21,7 @@
             <field name="comment">Acceso al stock general</field>
             <field name="category_id" ref="module_proveedor_stock_category"/>
             <field name="users" eval="[(4, ref('base.user_root'))]"/>
-            <field name="implied_ids" eval="[(4, ref('group_proveedores_marcas_user'))]"/>
+            <!-- <field name="implied_ids" eval="[(4, ref('group_proveedores_marcas_user'))]"/> -->
         </record>
 
         <record id="minori_marcas_proveedor" model="ir.rule">

@@ -23,13 +23,13 @@
 
     # always loaded
     'data': [
+        'data/marcas_propias.xml',
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
         'report/stock_report.xml',
         'report/comision_marca.xml',
         'report/reporte_marcas.xml',
-        'data/marcas_propias.xml',
         'wizard/wizard_comision_marcas.xml'
 
     ],

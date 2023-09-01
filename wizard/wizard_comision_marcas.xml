@@ -12,6 +12,7 @@
                             <group>
                                 <field name="marca_id" options="{'no_create': True}"/>
                                 <field name="periodo_id"/>
+                                <field name="pos_ids" widget="many2many_tags"/>
                                 <field name="nota"/>
                                 
                             </group>

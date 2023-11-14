@@ -10,11 +10,7 @@ class ReporteComisionMarcas(models.TransientModel):
     @api.multi
     def _comision_mes(self):
         periodo=self.env['method_minori.periodos'].search([('id','=',self.periodo_id.id)])
-        pos_ids=[]
-        for i in self.pos_ids:
-            pos_ids.append(i.id)
-        pos_ids=tuple(pos_ids) 
-        qry=periodo.qry.format(self.marca_id.id,pos_ids)
+        qry=periodo.qry.format(self.marca_id.id,self.pos_id.id)
         self._cr.execute(qry)
         _res = self._cr.dictfetchall()
         return _res
@@ -69,7 +65,7 @@ class PeriodoComision(models.Model):
             and pavppr.product_attribute_value_id =pav.id
             group by pavppr.product_product_id) var on pp.id=var.product_product_id 
             where mmm.id = {}
-            and pc.id in{}
+            and pc.id ={}
             and po.date_order between @fecha_inicial and @fecha_final
             order by po.date_order,po.sii_document_number,pol.product_id            
         """

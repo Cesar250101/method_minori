@@ -11,7 +11,7 @@ class Ventas(models.Model):
 
     tipodocto = fields.Char(string='Tipo Documento')  
     origen = fields.Char(string='Origen')  
-    date_order = fields.Date(string='Fecha Orden')    
+    date_order = fields.Datetime(string='Fecha Orden')    
     cliente_id = fields.Many2one(comodel_name='res.partner', string='Cliente')
     product_product_id = fields.Many2one(comodel_name='product.product', string='Producto')
     product_template_id = fields.Many2one(comodel_name='product.template', string='Plantilla Producto')

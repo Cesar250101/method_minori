@@ -74,6 +74,7 @@ class Ventas(models.Model):
                 pol.quantity as cantidad,
                 pol.price_unit,
                 pol.price_subtotal as neto,
+                pol.price_total as price_subtotal_incl,         
                 mmm.id as marca_id,
                 pc.id as categ_id,
                 mmm.user_id,

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record model="ir.ui.view" id="method_minori.view_report_pos_order_search">
+            <field name="name">method.minori.report.pos.order.search</field>
+            <field name="model">report.pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_report_pos_order_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='my_sales']" position="after">
+                    <separator/>
+                    <field name="marca_id"/>
+                    <filter string="Marcas Propias" name="es_propia" help="Marcas propias" domain="[('es_propia','=',True)]"/>
+                    <filter string="Marcas Externas" name="es_propia" help="Marcas externas" domain="[('es_propia','=',False)]"/>
+                </xpath>  
+            </field>
+        </record>        
+</odoo>

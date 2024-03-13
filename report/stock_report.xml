@@ -34,9 +34,9 @@
         <field name="arch" type="xml">
             <pivot string="Ventas por Marca" disable_linking="True">
                 <field name="marca_id" type="row"/>
-                <field name="product_product_id" type="row"/>
-                <field name="cantidad" type="measure"/>                
-                <field name="price_subtotal" type="measure"/>
+                <field name="product_id" type="row"/>
+                <field name="product_qty" type="measure"/>                
+                <field name="price_sub_total" type="measure"/>
                 <field name="sucursal_id" type="col"/>
                 
             </pivot>
@@ -48,10 +48,10 @@
         <field name="arch" type="xml">
             <pivot string="Ventas Marca Propias y Externas" disable_linking="True">
                 <field name="marca_id" type="row"/>
-                <field name="product_product_id" type="row"/>
-                <field name="cantidad" type="measure"/>                
-                <field name="neto" type="measure"/>                
-                <field name="bruto" type="measure"/>
+                <field name="product_id" type="row"/>
+                <field name="product_qty" type="measure"/>                
+                <field name="price_sub_total" type="measure"/>                
+                <field name="price_total" type="measure"/>
             </pivot>
         </field>
     </record>
@@ -72,8 +72,8 @@
         <field name="model">method_minori.ventas_report_marcas</field>
         <field name="arch" type="xml">
             <graph string="Ventas por marca">
-                <field name="product_product_id" type="row"/>
-                <field name="price_subtotal" type="measure"/>
+                <field name="product_id" type="row"/>
+                <field name="price_sub_total" type="measure"/>
             </graph>
         </field>
     </record>    
@@ -82,9 +82,10 @@
         <field name="model">method_minori.report_marcas_propias</field>
         <field name="arch" type="xml">
             <graph string="Ventas marca propias y externas">
-                <field name="product_product_id" type="row"/>
+                <field name="product_id" type="row"/>
                 <field name="es_propia" type="col"/>
-                <field name="neto" type="measure"/>
+                <field name="price_total" type="measure"/>
+                
             </graph>
         </field>
     </record>    

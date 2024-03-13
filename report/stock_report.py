@@ -141,8 +141,8 @@ class MarcasPropias(models.Model):
                     pt.id as product_template_id,
                     pol.qty as cantidad,
                     pol.price_unit,
-                    pol.price_subtotal as neto,
-                    pol.price_subtotal_incl as bruto,
+                    (pol.price_subtotal-pol.discount) as neto,
+                    (pol.price_subtotal_incl-pol.discount) as bruto,
                     mmm.id as marca_id,
                     pc.id as categ_id,
                     mmm.user_id,
@@ -163,13 +163,13 @@ class MarcasPropias(models.Model):
                     union
                     SELECT 
                     ROW_NUMBER() OVER() AS id,
-                    sdc.name as tipodocto,
+                    'Nota de Venta' as tipodocto,
                     'Ventas' as origen,
-                    po.date_invoice,
+                    po.date_order ,
                     rp.id as cliente_id,
                     pp.id as product_product_id,
                     pt.id as product_template_id,
-                    pol.quantity as cantidad,
+                    pol.product_uom_qty  as cantidad,
                     pol.price_unit,
                     pol.price_subtotal as neto,
                     pol.price_total as bruto,
@@ -181,14 +181,12 @@ class MarcasPropias(models.Model):
                     0 as session_id , 
                     0 as sucursal_id,
                     mmm.es_propia
-                    from account_invoice po left join sii_document_class sdc on po.document_class_id =sdc.id
-                    inner join account_invoice_line pol on po.id =pol.invoice_id 
+                    from sale_order  po inner join sale_order_line  pol on po.id =pol.order_id 
                     inner join product_product pp on pol.product_id =pp.id
                     inner join product_template pt on pp.product_tmpl_id =pt.id  
                     left join res_partner rp on po.partner_id =rp.id
                     left join method_minori_marcas mmm on pt.marca_id =mmm.id
-                    left join product_category pc on pt.categ_id =pc.id  
-  
+                    left join product_category pc on pt.categ_id =pc.id    
             )
         """ % (
             self._table

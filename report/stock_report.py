@@ -123,7 +123,8 @@ class MarcasPropias(models.Model):
     _description = "Ventas por marca y segmentación por marcas propias y no propias"
     _auto = False
     _order = 'product_id desc'
-        
+
+    origen = fields.Char(string='Origen Venta')    
     date = fields.Datetime(string='Order Date', readonly=True)
     order_id = fields.Many2one('pos.order', string='Order', readonly=True)
     partner_id = fields.Many2one('res.partner', string='Customer', readonly=True)
@@ -134,8 +135,8 @@ class MarcasPropias(models.Model):
          ('invoiced', 'Invoiced'), ('cancel', 'Cancelled')],
         string='Status')
     user_id = fields.Many2one('res.users', string='Salesperson', readonly=True)
-    price_total = fields.Float(string='Total Price', readonly=True)
-    price_sub_total = fields.Float(string='Subtotal w/o discount', readonly=True)
+    price_total = fields.Float(string='Total', readonly=True)
+    price_sub_total = fields.Float(string='Neto', readonly=True)
     total_discount = fields.Float(string='Total Discount', readonly=True)
     average_price = fields.Float(string='Average Price', readonly=True, group_operator="avg")
     location_id = fields.Many2one('stock.location', string='Location', readonly=True)
@@ -156,12 +157,13 @@ class MarcasPropias(models.Model):
 
     def _select(self):
         return """
-            SELECT
+                SELECT
                 MIN(l.id) AS id,
                 COUNT(*) AS nbr_lines,
+                'POS' as origen,
                 s.date_order AS date,
                 SUM(l.qty) AS product_qty,
-                SUM(l.qty * l.price_unit) AS price_sub_total,
+                round( SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)/1.19,0) AS price_sub_total,
                 SUM((l.qty * l.price_unit) * (100 - l.discount) / 100) AS price_total,
                 SUM((l.qty * l.price_unit) * (l.discount / 100)) AS total_discount,
                 (SUM(l.qty*l.price_unit)/SUM(l.qty * u.factor))::decimal AS average_price,
@@ -182,10 +184,6 @@ class MarcasPropias(models.Model):
                 s.session_id,
                 s.invoice_id IS NOT NULL AS invoiced,
                 pt.marca_id ,mmm.es_propia,pc.id as sucursal_id  
-        """
-
-    def _from(self):
-        return """
             FROM pos_order_line AS l
                 LEFT JOIN pos_order s ON (s.id=l.order_id)
                 LEFT JOIN product_product p ON (l.product_id=p.id)
@@ -194,10 +192,6 @@ class MarcasPropias(models.Model):
                 LEFT JOIN pos_session ps ON (s.session_id=ps.id)
                 left join method_minori_marcas mmm on (pt.marca_id=mmm.id )
                 left join pos_config pc on ps.config_id =pc.id 
-        """
-
-    def _group_by(self):
-        return """
             GROUP BY
                 s.id, s.date_order, s.partner_id,s.state, pt.categ_id,
                 s.user_id, s.location_id, s.company_id, s.sale_journal,
@@ -207,12 +201,53 @@ class MarcasPropias(models.Model):
                 p.product_tmpl_id,
                 ps.config_id,
                 pt.marca_id,mmm.es_propia,pc.id  
-        """
-
-    def _having(self):
-        return """
             HAVING
                 SUM(l.qty * u.factor) != 0
+          union      
+            SELECT
+                MIN(l.id) AS id,
+                COUNT(*) AS nbr_lines,
+                'Sale' as origen,
+                s.date_order AS date,
+                SUM(l.product_uom_qty) AS product_qty,
+                SUM(l.price_subtotal) AS price_sub_total,
+                SUM((l.product_uom_qty * l.price_unit) * (100 - l.discount) / 100) AS price_total,
+                SUM((l.product_uom_qty * l.price_unit) * (l.discount / 100)) AS total_discount,
+                (SUM(l.product_uom_qty*l.price_unit)/SUM(l.product_uom_qty * u.factor))::decimal AS average_price,
+                SUM(cast(to_char(date_trunc('day',s.date_order) - date_trunc('day',s.create_date),'DD') AS INT)) AS delay_validation,
+                s.id as order_id,
+                s.partner_id AS partner_id,
+                s.state AS state,
+                s.user_id AS user_id,
+                null  AS location_id,
+                s.company_id AS company_id,
+                null  AS journal_id,
+                l.product_id AS product_id,
+                pt.categ_id AS product_categ_id,
+                p.product_tmpl_id,
+                null as config_id,
+                pt.pos_categ_id,
+                s.pricelist_id,
+                null as session_id,
+                null AS invoiced,
+                pt.marca_id ,mmm.es_propia,null  as sucursal_id  
+            FROM sale_order_line  AS l
+                LEFT JOIN sale_order  s ON (s.id=l.order_id)
+                LEFT JOIN product_product p ON (l.product_id=p.id)
+                LEFT JOIN product_template pt ON (p.product_tmpl_id=pt.id)
+                LEFT JOIN uom_uom u ON (u.id=pt.uom_id)
+                left join method_minori_marcas mmm on (pt.marca_id=mmm.id ) 
+            GROUP BY
+                s.id, s.date_order, s.partner_id,s.state, pt.categ_id,
+                s.user_id, s.company_id, 
+                s.pricelist_id,  s.create_date, 
+                l.product_id,
+                pt.categ_id, pt.pos_categ_id,
+                p.product_tmpl_id,
+                pt.marca_id,mmm.es_propia  
+            HAVING
+                SUM(l.product_uom_qty  * u.factor) != 0
+
         """
 
     @api.model_cr
@@ -221,11 +256,9 @@ class MarcasPropias(models.Model):
         self._cr.execute("""
             CREATE OR REPLACE VIEW %s AS (
                 %s
-                %s
-                %s
-                %s
+
             )
-        """ % (self._table, self._select(), self._from(), self._group_by(),self._having())
+        """ % (self._table, self._select())
         )
 
 

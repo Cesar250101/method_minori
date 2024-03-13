@@ -6,6 +6,7 @@ class Ventas(models.Model):
     _auto = False
     _order = 'fecha_dia'
 
+    origen = fields.Char(string='Origen Venta')
     fecha_dia = fields.Date(string='Fecha')
     dia = fields.Integer(string='Día')
     total = fields.Integer(string='Total')
@@ -20,12 +21,13 @@ class Ventas(models.Model):
         user=self.env.uid
         tools.drop_view_if_exists(self._cr, self._table)
         self._cr.execute("""
-            CREATE OR REPLACE VIEW %s AS (            SELECT
+            CREATE OR REPLACE VIEW %s AS (SELECT
                     ROW_NUMBER() OVER() AS id,
+                    'POS' as origen,
                     date(s.date_order) as fecha_dia,
                     EXTRACT(day FROM s.date_order) as dia,
                     SUM((l.qty * l.price_unit) * (100 - l.discount) / 100) as total,
-                   SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)- (SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)/1.19)as impuesto,
+                    SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)- (SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)/1.19)as impuesto,
                     SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)/1.19 as neto,
                     max(s.sii_document_number)  as Ultimo,min(s.sii_document_number) as Primero,
                     mmm.es_propia 
@@ -41,6 +43,7 @@ class Ventas(models.Model):
 				 union 
                     SELECT 
                     ROW_NUMBER() OVER() AS id,
+                    'Sale' as origen,
                     date(po.date_order) as fecha_dia,
                     EXTRACT(day FROM po.date_order) as dia,
                     sum(pol.price_total) as total,

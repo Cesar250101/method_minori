@@ -26,9 +26,9 @@ class Ventas(models.Model):
                     'POS' as origen,
                     date(s.date_order) as fecha_dia,
                     EXTRACT(day FROM s.date_order) as dia,
-                    SUM((l.qty * l.price_unit) * (100 - l.discount) / 100) as total,
-                    SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)- (SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)/1.19)as impuesto,
-                    SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)/1.19 as neto,
+                   SUM((l.qty * l.price_unit) * (100 - l.discount) / 100) as total,
+                    SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)- (SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)/1.19) as impuesto,
+                    round( SUM((l.qty * l.price_unit) * (100 - l.discount) / 100)/1.19,0) as neto,
                     max(s.sii_document_number)  as Ultimo,min(s.sii_document_number) as Primero,
                     mmm.es_propia 
             FROM pos_order_line AS l

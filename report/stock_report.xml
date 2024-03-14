@@ -68,7 +68,7 @@
         </field>
     </record>
 
-    <record id="method_minori.venta_report_graph" model="ir.ui.view">
+       <record id="method_minori.venta_report_graph" model="ir.ui.view">
         <field name="model">method_minori.ventas_report_marcas</field>
         <field name="arch" type="xml">
             <graph string="Ventas por marca">
@@ -76,6 +76,7 @@
                 <field name="price_subtotal" type="measure"/>
             </graph>
         </field>
+    </record>
 
     <record id="method_minori.venta_marcas_propias_report_graph" model="ir.ui.view">
         <field name="model">method_minori.report_marcas_propias</field>

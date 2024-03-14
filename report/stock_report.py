@@ -103,9 +103,6 @@ class VentasMarcas(models.Model):
         self._cr.execute("""
             CREATE OR REPLACE VIEW %s AS (
                 %s
-                %s
-                %s
-                %s
             )
         """ % (self._table, self._select())
         )

@@ -34,9 +34,9 @@
         <field name="arch" type="xml">
             <pivot string="Ventas por Marca" disable_linking="True">
                 <field name="marca_id" type="row"/>
-                <field name="product_id" type="row"/>
-                <field name="product_qty" type="measure"/>                
-                <field name="price_sub_total" type="measure"/>
+                <field name="product_product_id" type="row"/>
+                <field name="cantidad" type="measure"/>                
+                <field name="price_subtotal" type="measure"/>
                 <field name="sucursal_id" type="col"/>
                 
             </pivot>
@@ -72,11 +72,10 @@
         <field name="model">method_minori.ventas_report_marcas</field>
         <field name="arch" type="xml">
             <graph string="Ventas por marca">
-                <field name="product_id" type="row"/>
-                <field name="price_sub_total" type="measure"/>
+                <field name="product_product_id" type="row"/>
+                <field name="price_subtotal" type="measure"/>
             </graph>
         </field>
-    </record>    
 
     <record id="method_minori.venta_marcas_propias_report_graph" model="ir.ui.view">
         <field name="model">method_minori.report_marcas_propias</field>

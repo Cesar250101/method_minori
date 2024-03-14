@@ -44,63 +44,57 @@ class VentasMarcas(models.Model):
 
     def _select(self):
         return """
-            SELECT
-                MIN(l.id) AS id,
-                COUNT(*) AS nbr_lines,
-                s.date_order AS date,
-                SUM(l.qty) AS product_qty,
-                SUM(l.qty * l.price_unit) AS price_sub_total,
-                SUM((l.qty * l.price_unit) * (100 - l.discount) / 100) AS price_total,
-                SUM((l.qty * l.price_unit) * (l.discount / 100)) AS total_discount,
-                (SUM(l.qty*l.price_unit)/SUM(l.qty * u.factor))::decimal AS average_price,
-                SUM(cast(to_char(date_trunc('day',s.date_order) - date_trunc('day',s.create_date),'DD') AS INT)) AS delay_validation,
-                s.id as order_id,
-                s.partner_id AS partner_id,
-                s.state AS state,
-                s.user_id AS user_id,
-                s.location_id AS location_id,
-                s.company_id AS company_id,
-                s.sale_journal AS journal_id,
-                l.product_id AS product_id,
-                pt.categ_id AS product_categ_id,
-                p.product_tmpl_id,
-                ps.config_id,
-                pt.pos_categ_id,
-                s.pricelist_id,
-                s.session_id,
-                s.invoice_id IS NOT NULL AS invoiced,
-                pt.marca_id ,mmm.es_propia,pc.id as sucursal_id  
-        """
-
-    def _from(self):
-        return """
-            FROM pos_order_line AS l
-                LEFT JOIN pos_order s ON (s.id=l.order_id)
-                LEFT JOIN product_product p ON (l.product_id=p.id)
-                LEFT JOIN product_template pt ON (p.product_tmpl_id=pt.id)
-                LEFT JOIN uom_uom u ON (u.id=pt.uom_id)
-                LEFT JOIN pos_session ps ON (s.session_id=ps.id)
-                left join method_minori_marcas mmm on (pt.marca_id=mmm.id )
-                left join pos_config pc on ps.config_id =pc.id 
-        """
-
-    def _group_by(self):
-        return """
-            GROUP BY
-                s.id, s.date_order, s.partner_id,s.state, pt.categ_id,
-                s.user_id, s.location_id, s.company_id, s.sale_journal,
-                s.pricelist_id, s.invoice_id, s.create_date, s.session_id,
-                l.product_id,
-                pt.categ_id, pt.pos_categ_id,
-                p.product_tmpl_id,
-                ps.config_id,
-                pt.marca_id,mmm.es_propia,pc.id  
-        """
-
-    def _having(self):
-        return """
-            HAVING
-                SUM(l.qty * u.factor) != 0
+            SELECT 
+                ROW_NUMBER() OVER() AS id,'POS' as origen,
+                sdc.name as tipodocto,
+                po.date_order,
+                rp.id as cliente_id,
+                pp.id as product_product_id,
+                pt.id as product_template_id,
+                pol.qty as cantidad,
+                pol.price_unit,
+                pol.price_subtotal,
+                mmm.id as marca_id,
+                pc.id as categ_id,
+                mmm.user_id,
+                mmm.comision_marca ,
+                round((pol.price_subtotal * (mmm.comision_marca/100))) as comision,
+                ps.id as session_id , 
+                pc2.id as sucursal_id
+                from pos_order po left join sii_document_class sdc on po.document_class_id =sdc.id
+                inner join pos_order_line pol on po.id =pol.order_id 
+                inner join product_product pp on pol.product_id =pp.id
+                inner join product_template pt on pp.product_tmpl_id =pt.id  
+                left join res_partner rp on po.partner_id =rp.id
+                left join method_minori_marcas mmm on pt.marca_id =mmm.id
+                left join product_category pc on pt.categ_id =pc.id 
+                left join pos_session ps on po.session_id =ps.id 
+                left join pos_config pc2 on ps.config_id =pc2.id  
+                union 
+                SELECT 
+                ROW_NUMBER() OVER() AS id,'Ventas' as origen,
+                sdc.name as tipodocto,
+                po.date_invoice,
+                rp.id as cliente_id,
+                pp.id as product_product_id,
+                pt.id as product_template_id,
+                pol.quantity as cantidad,
+                pol.price_unit,
+                pol.price_subtotal as neto,
+                mmm.id as marca_id,
+                pc.id as categ_id,
+                mmm.user_id,
+                mmm.comision_marca ,
+                round((pol.price_subtotal * (mmm.comision_marca/100))) as comision,
+                0 as session_id , 
+                0 as sucursal_id
+                from account_invoice po left join sii_document_class sdc on po.document_class_id =sdc.id
+                inner join account_invoice_line pol on po.id =pol.invoice_id 
+                inner join product_product pp on pol.product_id =pp.id
+                inner join product_template pt on pp.product_tmpl_id =pt.id  
+                left join res_partner rp on po.partner_id =rp.id
+                left join method_minori_marcas mmm on pt.marca_id =mmm.id
+                left join product_category pc on pt.categ_id =pc.id
         """
 
     @api.model_cr
@@ -113,7 +107,7 @@ class VentasMarcas(models.Model):
                 %s
                 %s
             )
-        """ % (self._table, self._select(), self._from(), self._group_by(),self._having())
+        """ % (self._table, self._select())
         )
 
 

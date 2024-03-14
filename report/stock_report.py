@@ -12,34 +12,25 @@ class VentasMarcas(models.Model):
     _auto = False
     _order = 'date desc'
         
-    date = fields.Datetime(string='Order Date', readonly=True)
-    order_id = fields.Many2one('pos.order', string='Order', readonly=True)
-    partner_id = fields.Many2one('res.partner', string='Customer', readonly=True)
-    product_product_id = fields.Many2one('product.product', string='Product', readonly=True)
-    product_tmpl_id = fields.Many2one('product.template', string='Product Template', readonly=True)
-    state = fields.Selection(
-        [('draft', 'New'), ('paid', 'Paid'), ('done', 'Posted'),
-         ('invoiced', 'Invoiced'), ('cancel', 'Cancelled')],
-        string='Status')
-    user_id = fields.Many2one('res.users', string='Salesperson', readonly=True)
-    price_total = fields.Float(string='Total Price', readonly=True)
-    price_sub_total = fields.Float(string='Subtotal w/o discount', readonly=True)
-    total_discount = fields.Float(string='Total Discount', readonly=True)
-    average_price = fields.Float(string='Average Price', readonly=True, group_operator="avg")
-    location_id = fields.Many2one('stock.location', string='Location', readonly=True)
-    company_id = fields.Many2one('res.company', string='Company', readonly=True)
-    nbr_lines = fields.Integer(string='Sale Line Count', readonly=True, oldname='nbr')
-    product_qty = fields.Integer(string='Product Quantity', readonly=True)
-    journal_id = fields.Many2one('account.journal', string='Journal')
-    delay_validation = fields.Integer(string='Delay Validation')
-    product_categ_id = fields.Many2one('product.category', string='Product Category', readonly=True)
-    invoiced = fields.Boolean(readonly=True)
-    config_id = fields.Many2one('pos.config', string='Point of Sale', readonly=True)
-    pos_categ_id = fields.Many2one('pos.category', string='PoS Category', readonly=True)
-    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', readonly=True)
-    session_id = fields.Many2one('pos.session', string='Session', readonly=True)
-    marca_id = fields.Many2one(comodel_name='method_minori.marcas', string='Marcas')
-    es_propia = fields.Boolean(string='Marca Propia?')
+    tipodocto = fields.Char(string='Tipo Documento')  
+    origen = fields.Char(string='Origen')  
+    date_order = fields.Date(string='Fecha Orden')    
+    cliente_id = fields.Many2one(comodel_name='res.partner', string='Cliente')
+    product_product_id = fields.Many2one(comodel_name='product.product', string='Producto')
+    product_template_id = fields.Many2one(comodel_name='product.template', string='Plantilla Producto')
+    cantidad = fields.Integer(string='Cantidad')    
+    price_unit = fields.Integer(string='Precio Unitario')
+    price_subtotal = fields.Integer(string='Subtotal Línea')
+    marca_id = fields.Many2one(comodel_name='method_minori.marcas', string='Marca')
+    categ_id = fields.Many2one(comodel_name='product.category', string='Categoria Producto')
+    user_id = fields.Many2one(
+        'res.users',
+        string='Usuario',
+        readonly=True,
+    )    
+    comision = fields.Integer(string='Comisión Marca')
+    comision_marca = fields.Char(string='Comisión Marca')    
+    session_id = fields.Many2one(comodel_name='pos.session', string='Sesión')
     sucursal_id = fields.Many2one(comodel_name='pos.config', string='Sucursal')
 
     def _select(self):

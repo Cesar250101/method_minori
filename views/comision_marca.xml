@@ -71,7 +71,7 @@
                                     <t t-set="totalneto" t-value="0"/>
                                     <t t-set="total" t-value="0"/>
                                     <t t-set="valorcomision" t-value="0"/>
-                                    <t t-set="porccomision" t-value="0"/>
+                                    <t car_service_shop t-value="0"/>
                                     <t t-set="factura_bruta" t-value="0"/>
                                     <t t-foreach="facturas" t-as="f">
                                         <tr>
@@ -89,10 +89,9 @@
                                         <t t-set="totalneto" t-value="totalneto+f['neto']"/> 
                                         <t t-set="total" t-value="total+f['subtotal']"/> 
                                         <t t-set="valorcomision" t-value="valorcomision+f['valorcomision']"/> 
-                                        <t t-if="f['comision_marca']!=null">
-                                            <t t-set="porccomision" t-value="f['comision_marca']"/> 
+                                        <t t-if="f['comision_marca']">
+                                            <t car_service_shop t-value="f['comision_marca']"/> 
                                         </t>
-
                                         
                                     </t>
                                 </t>

@@ -46,7 +46,7 @@
     <record id="method_minori.report_venta_dia_action" model="ir.actions.act_window">
         <field name="name">Ventas por día</field>
         <field name="res_model">method_minori.ventas_dia_report</field>
-        <field name="view_type">form</field>
+        <!-- <field name="view_type">form</field> -->
         <field name="view_mode">pivot,graph</field>
         <field name="context">{'group_by_no_leaf': 1, 'group_by': []}</field>        
     </record>
@@ -54,7 +54,7 @@
     <record id="method_minori.report_notas_credito_action" model="ir.actions.act_window">
         <field name="name">Notas de Crédito Emitidas</field>
         <field name="res_model">method_minori.notas_credito_report</field>
-        <field name="view_type">form</field>
+        <!-- <field name="view_type">form</field> -->
         <field name="view_mode">pivot</field>
         <field name="context">{'group_by_no_leaf': 1, 'group_by': []}</field>        
     </record>

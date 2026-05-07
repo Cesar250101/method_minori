@@ -11,10 +11,20 @@ class Productos(models.Model):
 
     @api.onchange('marca_id')
     def _onchange_marca_id(self):
-        pos_categ=self.env['pos.category'].search([('name','=',self.marca_id.name)],limit=1)
-        if pos_categ:
-            self.available_in_pos=True
-            self.pos_categ_id=pos_categ.id
+        if self.marca_id:
+            pos_categ=self.env['pos.category'].search([('name','=',self.marca_id.name)],limit=1)
+            if pos_categ:
+                self.available_in_pos=True
+                self.pos_categ_id=pos_categ.id
+                return 
+            else:
+                value={
+                    'name':self.marca_id.name
+                }
+                rec=pos_categ.create(value)
+                self.available_in_pos=True                
+                self.pos_categ_id=rec.id
+                return
 
     @api.model
     def calcular_costo(self):
@@ -43,9 +53,9 @@ class Marcas(models.Model):
     _name = 'method_minori.marcas'
     _description = 'Marcas de Productos'
 
-    name = fields.Char(string='Nombre Marca')
-    user_id = fields.Many2one(comodel_name='res.users', string='Usuario')
-    comision_marca = fields.Float(string='Comisión Marca')
+    name = fields.Char(string='Nombre Marca',required=True)
+    user_id = fields.Many2one(comodel_name='res.users', string='Usuario',required=True)
+    comision_marca = fields.Float(string='Comisión Marca', default=0)
     active = fields.Boolean(string='Activo', default=True)
     es_propia = fields.Boolean(string='Es marca propia?')
     

@@ -30,7 +30,8 @@
         'report/stock_report.xml',
         'report/comision_marca.xml',
         'report/reporte_marcas.xml',
-        'wizard/wizard_comision_marcas.xml'
+        'wizard/wizard_comision_marcas.xml',
+        'report/pos_order_report_view.xml'
 
     ],
     # only loaded in demonstration mode

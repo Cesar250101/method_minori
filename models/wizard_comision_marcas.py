@@ -25,7 +25,6 @@ class ComisionMarcas(models.TransientModel):
                             ('date_order','<=',self.fecha_final)]
         return search_domain
 
-    @api.multi
     def imprimir_pdf(self):
         data = {
             'ids': self.ids,
@@ -39,7 +38,7 @@ class ComisionMarcas(models.TransientModel):
 
         return self.env.ref('method_minori.comision_marca_report').report_action(self, config=False)
 
-    @api.multi
+
     def imprimir_excel(self):
 
         data = self.read()[0]

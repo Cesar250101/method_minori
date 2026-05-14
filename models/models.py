@@ -58,6 +58,7 @@ class Marcas(models.Model):
     comision_marca = fields.Float(string='Comisión Marca', default=0)
     active = fields.Boolean(string='Activo', default=True)
     es_propia = fields.Boolean(string='Es marca propia?')
+    marca_imagen = fields.Binary(string='Imagen Marca')
     
     
     

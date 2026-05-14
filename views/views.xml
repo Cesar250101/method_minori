@@ -108,6 +108,7 @@
           </div>               
             <group string="Marcas de Producto">
               <group>
+                <field name="marca_imagen" widget="image" options="{'size': [128, 128]}"/>
                 <field name="name"/>
                 <field name="user_id"/>
                 <field name="comision_marca"/>

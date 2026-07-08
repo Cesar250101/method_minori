@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_sales_dashboard" model="ir.actions.client">
+        <field name="name">Dashboard Ventas</field>
+        <field name="tag">method_minori_sales_dashboard</field>
+    </record>
+
+    <menuitem
+        id="menu_sales_dashboard"
+        name="Dashboard Ventas"
+        action="action_sales_dashboard"
+        parent="method_minori.menu_stock_report_root"
+        sequence="1"/>
+</odoo>

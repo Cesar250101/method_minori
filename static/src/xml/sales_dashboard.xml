@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="method_minori.SalesDashboard" owl="1">
+        <div class="o_action method_minori_sales_dashboard">
+            <div class="o_control_panel method_minori_dashboard_header">
+                <div>
+                    <h2>Dashboard de Ventas</h2>
+                    <div class="text-muted">Ventas por producto, cliente y vendedor</div>
+                </div>
+                <div class="method_minori_dashboard_filters">
+                    <select class="form-select" t-on-change="onBrandChange" t-att-value="state.selectedBrandId">
+                        <t t-foreach="state.brands" t-as="brand" t-key="brand.id">
+                            <option t-att-value="brand.id" t-att-selected="brand.id === state.selectedBrandId">
+                                <t t-esc="brand.name"/>
+                            </option>
+                        </t>
+                    </select>
+                    <input class="form-control" type="date" t-att-value="state.dateFrom" t-on-change="onDateFromChange"/>
+                    <input class="form-control" type="date" t-att-value="state.dateTo" t-on-change="onDateToChange"/>
+                    <button class="btn btn-primary" type="button" t-on-click="onApplyFilters">
+                        Aplicar
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" t-on-click="openVentasReport" t-att-disabled="!state.selectedBrandId">
+                        Ver reporte
+                    </button>
+                </div>
+            </div>
+
+            <t t-if="state.loading">
+                <div class="method_minori_dashboard_empty">Cargando ventas...</div>
+            </t>
+            <t t-elif="!state.brands.length">
+                <div class="method_minori_dashboard_empty">No tienes marcas asignadas.</div>
+            </t>
+            <t t-else="">
+                <div class="method_minori_kpis">
+                    <div class="method_minori_kpi method_minori_kpi--primary">
+                        <span class="method_minori_kpi_icon"><i class="fa fa-money"/></span>
+                        <div class="method_minori_kpi_body">
+                            <span class="method_minori_kpi_label">Venta Bruta</span>
+                            <strong t-esc="formatMoney(state.summary.amount_total)"/>
+                        </div>
+                    </div>
+                    <div class="method_minori_kpi method_minori_kpi--success">
+                        <span class="method_minori_kpi_icon"><i class="fa fa-line-chart"/></span>
+                        <div class="method_minori_kpi_body">
+                            <span class="method_minori_kpi_label">Venta Neta</span>
+                            <strong t-esc="formatMoney(state.summary.amount_untaxed)"/>
+                        </div>
+                    </div>
+                    <div class="method_minori_kpi">
+                        <span class="method_minori_kpi_icon"><i class="fa fa-cubes"/></span>
+                        <div class="method_minori_kpi_body">
+                            <span class="method_minori_kpi_label">Cantidad</span>
+                            <strong t-esc="formatNumber(state.summary.quantity, 2)"/>
+                        </div>
+                    </div>
+                    <div class="method_minori_kpi">
+                        <span class="method_minori_kpi_icon"><i class="fa fa-users"/></span>
+                        <div class="method_minori_kpi_body">
+                            <span class="method_minori_kpi_label">Clientes</span>
+                            <strong t-esc="formatNumber(state.summary.customers, 0)"/>
+                        </div>
+                    </div>
+                    <div class="method_minori_kpi">
+                        <span class="method_minori_kpi_icon"><i class="fa fa-shopping-bag"/></span>
+                        <div class="method_minori_kpi_body">
+                            <span class="method_minori_kpi_label">Productos</span>
+                            <strong t-esc="formatNumber(state.summary.products, 0)"/>
+                        </div>
+                    </div>
+                    <div class="method_minori_kpi">
+                        <span class="method_minori_kpi_icon"><i class="fa fa-user-circle-o"/></span>
+                        <div class="method_minori_kpi_body">
+                            <span class="method_minori_kpi_label">Vendedores</span>
+                            <strong t-esc="formatNumber(state.summary.sellers, 0)"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="method_minori_charts">
+                    <section class="method_minori_chart_card">
+                        <h3>Top Productos por Venta</h3>
+                        <div class="method_minori_chart_canvas">
+                            <t t-if="state.products.length">
+                                <canvas t-ref="productChart"/>
+                            </t>
+                            <t t-else="">
+                                <div class="method_minori_table_empty">Sin ventas en el periodo.</div>
+                            </t>
+                        </div>
+                    </section>
+                    <section class="method_minori_chart_card">
+                        <h3>Distribución por Cliente</h3>
+                        <div class="method_minori_chart_canvas">
+                            <t t-if="state.customers.length">
+                                <canvas t-ref="customerChart"/>
+                            </t>
+                            <t t-else="">
+                                <div class="method_minori_table_empty">Sin ventas en el periodo.</div>
+                            </t>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="method_minori_charts method_minori_charts--full">
+                    <section class="method_minori_chart_card">
+                        <h3><i class="fa fa-map-marker me-2"/>Ventas por Punto de Venta (Sucursal)</h3>
+                        <div class="method_minori_chart_canvas method_minori_chart_canvas--short">
+                            <t t-if="state.pos_branches.length">
+                                <canvas t-ref="posChart"/>
+                            </t>
+                            <t t-else="">
+                                <div class="method_minori_table_empty">Sin ventas en el periodo.</div>
+                            </t>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="method_minori_dashboard_grid">
+                    <DashboardTable title="'Ventas por Producto'" rows="state.products" formatMoney.bind="formatMoney" formatNumber.bind="formatNumber"/>
+                    <DashboardTable title="'Ventas por Cliente'" rows="state.customers" formatMoney.bind="formatMoney" formatNumber.bind="formatNumber"/>
+                </div>
+            </t>
+        </div>
+    </t>
+
+    <t t-name="method_minori.SalesDashboard.Table" owl="1">
+        <section class="method_minori_dashboard_panel">
+            <h3 t-esc="props.title"/>
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th class="text-end">Cant.</th>
+                        <th class="text-end">Neto</th>
+                        <th class="text-end">Bruto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-if="props.rows.length">
+                        <t t-foreach="props.rows" t-as="row" t-key="`${props.title}-${row.id || row.name}`">
+                            <tr>
+                                <td>
+                                    <span class="method_minori_row_name" t-esc="row.name"/>
+                                </td>
+                                <td class="text-end" t-esc="props.formatNumber(row.quantity, 2)"/>
+                                <td class="text-end" t-esc="props.formatMoney(row.amount_untaxed)"/>
+                                <td class="text-end" t-esc="props.formatMoney(row.amount_total)"/>
+                            </tr>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <tr>
+                            <td colspan="4" class="method_minori_table_empty">Sin ventas en el periodo.</td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </section>
+    </t>
+</templates>

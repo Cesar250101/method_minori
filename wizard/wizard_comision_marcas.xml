@@ -42,16 +42,16 @@
             groups="account.group_account_manager" 
             sequence="5"/> -->
 
-    <menuitem name="Reporte Comisión Marcas" id="action_reportes_comision_marca_menu" parent="menu_stock_report_root"/>
+    <menuitem name="Reporte Comisión Marcas" id="action_reportes_comision_marca_menu" parent="method_minori.menu_informes" sequence="4"/>
 
     <!-- actions -->
     
     <menuitem name="Reporte Comisión Marcas" id="action_reportes_comision_marca_menu_action" parent="action_reportes_comision_marca_menu"
               action="action_reportes_comision_marca"/>
 
-    <menuitem name="Periodos Comisión" 
-              id="method_minori.periodos_comision" 
-              parent="action_reportes_comision_marca_menu"
+    <menuitem name="Periodos Comisión"
+              id="method_minori.periodos_comision"
+              parent="method_minori.menu_configuracion"
               action="method_minori.action_periodo_comision"/>
 
     </data>

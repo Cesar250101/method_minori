@@ -1,5 +1,5 @@
-import datetime
 from odoo import api, models, fields, tools
+from odoo.exceptions import AccessError
 from collections import OrderedDict
 import pandas as pd
 import pytz
@@ -11,15 +11,15 @@ class ReporteComisionMarcas(models.TransientModel):
 
 
     def _comision_mes(self):
-        periodo=self.env['method_minori.periodos'].search([('id','=',self.periodo_id.id)])
-        # qry=periodo.qry.format(self.marca_id.id,self.pos_id.id)
+        allowed_brands = self.env['method_minori.marcas']._get_allowed_dashboard_brands()
+        if self.marca_id not in allowed_brands:
+            raise AccessError('No tiene acceso a la marca seleccionada.')
+
         fecha_inicial=self.periodo_id.fecha_inicial.date().isoformat()
         fecha_final=(self.periodo_id.fecha_final.date()- timedelta(days=1)).isoformat()
-        fecha_inicial="'"+str(fecha_inicial)+' 00:00:00'+"'"
-        fecha_final="'"+str(fecha_final)+' 23:55:55'+"'"
         qry="""select sdc.name as TipoDocto,po.sii_document_number as nrodocto,TO_CHAR(po.date_order , 'YYYY-MM-DD') as fecha,
                     mmm.name as marca,pp.default_code as sku,
-                    jsonb_extract_path_text(pt.name, 'en_US')  as nombreproducto,
+                    COALESCE(pt.name->>%s, pt.name->>'es_CL', pt.name->>'es_ES', pt.name->>'en_US', pp.default_code, '')  as nombreproducto,
                     pol.qty as cantidad,price_unit as pvp,pol.discount,pol.price_subtotal_incl as subtotal,pol.price_subtotal as neto,
                     mmm.comision_marca,mmm.id as id_marca,(pol.price_subtotal*(mmm.comision_marca/100)) as valorcomision ,pc.name as sucursal
                     from pos_order po inner join pos_order_line pol on po.id=pol.order_id
@@ -29,12 +29,22 @@ class ReporteComisionMarcas(models.TransientModel):
                     inner join product_product pp on pol.product_id  =pp.id
                     inner join product_template pt on pp.product_tmpl_id =pt.id
                     inner join method_minori_marcas mmm on pt.marca_id =mmm.id
-                    where mmm.id = {}
-                    and pc.id ={}
-                    and po.date_order between {} and {}
+                    where mmm.id = %s
+                    and pc.id = %s
+                    and po.date_order between %s and %s
+                    and po.state in ('paid', 'done', 'invoiced')
                     order by po.date_order,po.sii_document_number,pol.product_id            
-        """.format(self.marca_id.id,self.pos_id.id,fecha_inicial,fecha_final)
-        self._cr.execute(qry)
+        """
+        self._cr.execute(
+            qry,
+            (
+                self.env.lang or 'en_US',
+                self.marca_id.id,
+                self.pos_id.id,
+                '{} 00:00:00'.format(fecha_inicial),
+                '{} 23:55:55'.format(fecha_final),
+            ),
+        )
         _res = self._cr.dictfetchall()
         return _res
 
@@ -48,10 +58,11 @@ class ReporteComisionMarcas(models.TransientModel):
 class PeriodoComision(models.Model):
     _name = 'method_minori.periodos'
 
-    name = fields.Char(string='Nombre del Periodo',requiered=True)
-    nota = fields.Text(string='Descripción')    
-    fecha_inicial = fields.Datetime(string='Fecha Inicial',requiered=True)
-    fecha_final = fields.Datetime(string='Fecha Final',requiered=True)
+    name = fields.Char(string='Nombre del Periodo', required=True)
+    nota = fields.Text(string='Descripción')
+    fecha_inicial = fields.Datetime(string='Fecha Inicial', required=True)
+    fecha_final = fields.Datetime(string='Fecha Final', required=True)
+    company_id = fields.Many2one(comodel_name='res.company', string='Compañía', default=lambda self: self.env.company)
 
     # qry = fields.Text(string='Query', compute='_compute_qry')
     qry = fields.Text(string='Query')

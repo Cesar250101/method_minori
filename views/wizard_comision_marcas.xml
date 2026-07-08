@@ -42,16 +42,16 @@
             groups="account.group_account_manager" 
             sequence="5"/> -->
 
-    <menuitem name="Reporte Comisión Marcas" id="car_service_shop" parent="menu_stock_report_root"/>
+    <menuitem name="Reporte Comisión Marcas" id="method_minori_comision_reports_menu" parent="menu_stock_report_root"/>
 
     <!-- actions -->
     
-    <menuitem name="Reporte Comisión Marcas" id="car_service_shop_action" parent="car_service_shop"
+    <menuitem name="Reporte Comisión Marcas" id="method_minori_comision_reports_action_menu" parent="method_minori_comision_reports_menu"
               action="action_reportes_comision_marca"/>
 
-    <menuitem name="Periodos Comisión" 
-              id="method_minori.periodos_comision" 
-              parent="car_service_shop"
+    <menuitem name="Periodos Comisión"
+              id="method_minori.periodos_comision"
+              parent="method_minori.menu_configuracion"
               action="method_minori.action_periodo_comision"/>
 
     </data>

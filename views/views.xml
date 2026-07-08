@@ -114,6 +114,11 @@
                 <field name="comision_marca"/>
                 <field name="es_propia"/>
               </group>  
+              <group>
+                <field name="partner_id"/>
+                <field name="valor_arriendo"/>
+                <field name="company_id" readonly="1"/>
+              </group>
             </group>
           </sheet>
         </form>
@@ -132,8 +137,9 @@
                 <field name="fecha_inicial"/>
                 <field name="fecha_final"/>
                 <field name="nota"/>
+                <field name="company_id" readonly="1"/>
                 <field name="qry" invisible="1"/>
-              </group>  
+              </group>
             </group>
           </sheet>
         </form>
@@ -148,6 +154,7 @@
         <tree>
           <field name="name"/>
           <field name="user_id"/>
+          <field name="company_id" readonly="1"/>
         </tree>
       </field>
     </record>
@@ -161,6 +168,7 @@
           <field name="name"/>
           <field name="fecha_inicial"/>
           <field name="fecha_final"/>
+          <field name="company_id" readonly="1"/>
         </tree>
       </field>
     </record>

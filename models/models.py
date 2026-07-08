@@ -59,7 +59,9 @@ class Marcas(models.Model):
     active = fields.Boolean(string='Activo', default=True)
     es_propia = fields.Boolean(string='Es marca propia?')
     marca_imagen = fields.Binary(string='Imagen Marca')
-    
+    partner_id = fields.Many2one(comodel_name='res.partner', string='Empresa Asociada',required=True)
+    valor_arriendo = fields.Float(string='Valor Arriendo', default=0)
+    company_id = fields.Many2one(comodel_name='res.company', string='Compañía', default=lambda self: self.env.company)
     
     
 

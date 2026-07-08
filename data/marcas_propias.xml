@@ -30,5 +30,26 @@
             <field name="domain_force">[('user_id','=',user.id)]</field>
             <field name="groups" eval="[(4, ref('group_proveedores_marcas_user'))]"/>
         </record>
+
+        <record id="minori_marcas_catalogo_proveedor" model="ir.rule">
+            <field name="name">Marcas asignadas al proveedor</field>
+            <field ref="model_method_minori_marcas" name="model_id"/>
+            <field name="domain_force">[('user_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_proveedores_marcas_user'))]"/>
+        </record>
+
+        <record id="minori_ventas_marcas_proveedor" model="ir.rule">
+            <field name="name">Ventas de marcas asignadas al proveedor</field>
+            <field ref="model_method_minori_ventas_report_marcas" name="model_id"/>
+            <field name="domain_force">[('user_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_proveedores_marcas_user'))]"/>
+        </record>
+
+        <record id="minori_ventas_marcas_propias_proveedor" model="ir.rule">
+            <field name="name">Ventas propias asignadas al proveedor</field>
+            <field ref="model_method_minori_report_marcas_propias" name="model_id"/>
+            <field name="domain_force">[('user_id','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_proveedores_marcas_user'))]"/>
+        </record>
     </data>
 </odoo>

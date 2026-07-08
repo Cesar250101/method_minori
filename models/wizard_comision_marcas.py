@@ -12,10 +12,10 @@ class ComisionMarcas(models.TransientModel):
     _name = 'method_minori.wizard_comision_marca'
     _description = 'Reporte de comisiones por marca'
 
-    marca_id = fields.Many2one(comodel_name='method_minori.marcas',string='Marca')
-    periodo_id = fields.Many2one(comodel_name='method_minori.periodos', string='Periodo')
+    marca_id = fields.Many2one(comodel_name='method_minori.marcas', string='Marca', required=True)
+    periodo_id = fields.Many2one(comodel_name='method_minori.periodos', string='Periodo', required=True)
     nota = fields.Text(string='Nota',related="periodo_id.nota")
-    pos_id = fields.Many2one(comodel_name='pos.config', string='Sucursal')
+    pos_id = fields.Many2one(comodel_name='pos.config', string='Sucursal', required=True)
     
         
     
@@ -118,7 +118,6 @@ class ComisionMarcasExcel(models.AbstractModel):
         factura_bruta=round((neto-comision)*1.19) 
         sheet.write(row+7,col+8, 'Factuta Bruta',bold)
         sheet.write(row+7,col+9,round((neto-comision)*1.19),bold)
-
 
 
 

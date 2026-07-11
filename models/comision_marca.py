@@ -67,16 +67,25 @@ class PeriodoComision(models.Model):
     # qry = fields.Text(string='Query', compute='_compute_qry')
     qry = fields.Text(string='Query')
 
+    _MESES_ES = {
+        1: 'Enero', 2: 'Febrero', 3: 'Marzo', 4: 'Abril',
+        5: 'Mayo', 6: 'Junio', 7: 'Julio', 8: 'Agosto',
+        9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre',
+    }
+
     @api.onchange('fecha_inicial','fecha_final')
     def _onchange_fecha(self):
+        if self.fecha_inicial:
+            mes = self._MESES_ES[self.fecha_inicial.month]
+            self.name = "{} {}".format(mes, self.fecha_inicial.year)
         if self.fecha_inicial and self.fecha_final:
             self.nota="""
             El periodo tiene como fechas de corte:
             Fecha Inicial ={}
             Fecha Final ={}
             """.format(self.fecha_inicial.strftime('%d-%m-%y') ,self.fecha_final.strftime('%d-%m-%y'))
-        
-    
+
+
 
     @api.depends('fecha_inicial','fecha_final')
     def _compute_qry(self):

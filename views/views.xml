@@ -133,7 +133,7 @@
           <sheet>
             <group string="Periodo de Comisión">
               <group>
-                <field name="name"/>
+                <field name="name" readonly="1"/>
                 <field name="fecha_inicial"/>
                 <field name="fecha_final"/>
                 <field name="nota"/>
@@ -178,12 +178,14 @@
       <field name="name">Marcas de Productos</field>
       <field name="res_model">method_minori.marcas</field>
       <field name="view_mode">tree,form</field>
+      <field name="domain">[('company_id', 'in', allowed_company_ids)]</field>
     </record>
 
     <record model="ir.actions.act_window" id="method_minori.action_periodo_comision">
       <field name="name">Periodos de pago de comisiones</field>
       <field name="res_model">method_minori.periodos</field>
       <field name="view_mode">tree,form</field>
+      <field name="domain">[('company_id', 'in', allowed_company_ids)]</field>
     </record>
 
     <menuitem name="Marcas" id="method_minori.marcas" parent="stock.menu_stock_inventory_control"/>

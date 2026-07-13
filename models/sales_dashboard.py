@@ -21,7 +21,10 @@ class MinoriSalesDashboard(models.Model):
         )
 
     def _get_allowed_dashboard_brands(self):
-        domain = [('active', '=', True)]
+        domain = [
+            ('active', '=', True),
+            ('company_id', 'in', [self.env.company.id, False]),
+        ]
         if not self._has_all_brand_access():
             domain.append(('user_id', '=', self.env.user.id))
         return self.search(domain, order='name')

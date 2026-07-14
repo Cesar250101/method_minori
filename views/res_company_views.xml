@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="method_minori_view_company_form_inherit">
+        <field name="name">method_minori.res.company.form.inherit</field>
+        <field name="inherit_id" ref="base.view_company_form" />
+        <field name="model">res.company</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name="liquidacion_mode"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -35,6 +35,7 @@
     'data': [
         'data/marcas_propias.xml',
         'security/ir.model.access.csv',
+        'views/res_company_views.xml',
         'views/views.xml',
         'views/templates.xml',
         'report/stock_report.xml',

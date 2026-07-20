@@ -41,16 +41,40 @@ class Ventas(models.Model):
 
 
     def init(self):
-        user=self.env.uid
         tools.drop_view_if_exists(self._cr, self._table)
+        tools.create_index(
+            self._cr,
+            'method_minori_product_template_marca_idx',
+            'product_template',
+            ['marca_id'],
+        )
+        tools.create_index(
+            self._cr,
+            'method_minori_pos_order_state_date_idx',
+            'pos_order',
+            ['state', 'date_order'],
+        )
+        tools.create_index(
+            self._cr,
+            'method_minori_account_move_state_type_date_idx',
+            'account_move',
+            ['state', 'move_type', 'invoice_date'],
+        )
+        tools.create_index(
+            self._cr,
+            'method_minori_account_move_line_product_idx',
+            'account_move_line',
+            ['move_id', 'product_id'],
+            where="display_type IS NULL OR display_type = 'product'",
+        )
         self._cr.execute("""
             CREATE OR REPLACE VIEW %s AS (SELECT
                 (pol.id * 2) AS id,'POS' as origen,
                 sdc.name as tipodocto,
                 po.date_order,
-                rp.id as cliente_id,
-                pp.id as product_product_id,
-                pt.id as product_template_id,
+                po.partner_id as cliente_id,
+                pol.product_id as product_product_id,
+                pp.product_tmpl_id as product_template_id,
                 pol.qty as cantidad,
                 pol.price_unit,
                 pol.price_subtotal,
@@ -58,32 +82,29 @@ class Ventas(models.Model):
                 pol.discount as discount,
                 po.sii_document_number::text as nrodocto,
                 mmm.id as marca_id,
-                pc.id as categ_id,
+                pt.categ_id as categ_id,
                 mmm.user_id,
                 po.user_id as vendedor_id,
                 mmm.comision_marca ,
                 round((pol.price_subtotal * (mmm.comision_marca/100))) as comision,
                 ps.id as session_id ,
-                pc2.id as sucursal_id,
+                ps.config_id as sucursal_id,
                 po.company_id as company_id
                 from pos_order po left join sii_document_class sdc on po.document_class_id =sdc.id
                 inner join pos_order_line pol on po.id =pol.order_id 
                 inner join product_product pp on pol.product_id =pp.id
                 inner join product_template pt on pp.product_tmpl_id =pt.id  
-                left join res_partner rp on po.partner_id =rp.id
                 left join method_minori_marcas mmm on pt.marca_id =mmm.id
-                left join product_category pc on pt.categ_id =pc.id 
                 left join pos_session ps on po.session_id =ps.id 
-                left join pos_config pc2 on ps.config_id =pc2.id  
                 where po.state in ('paid', 'done', 'invoiced')
-                union 
+                UNION ALL
                 SELECT 
                 (pol.id * 2 + 1) AS id,'Ventas' as origen,
                 sdc.name as tipodocto,
-                po.invoice_date,
-                rp.id as cliente_id,
-                pp.id as product_product_id,
-                pt.id as product_template_id,
+                po.invoice_date::timestamp as date_order,
+                po.partner_id as cliente_id,
+                pol.product_id as product_product_id,
+                pp.product_tmpl_id as product_template_id,
                 case when po.move_type = 'out_refund' then -pol.quantity else pol.quantity end as cantidad,
                 pol.price_unit,
                 case when po.move_type = 'out_refund' then -pol.price_subtotal else pol.price_subtotal end as neto,
@@ -91,7 +112,7 @@ class Ventas(models.Model):
                 pol.discount as discount,
                 po.sii_document_number::text as nrodocto,
                 mmm.id as marca_id,
-                pc.id as categ_id,
+                pt.categ_id as categ_id,
                 mmm.user_id,
                 po.invoice_user_id as vendedor_id,
                 mmm.comision_marca ,
@@ -103,12 +124,10 @@ class Ventas(models.Model):
                 inner join account_move_line pol on po.id =pol.move_id 
                 inner join product_product pp on pol.product_id =pp.id
                 inner join product_template pt on pp.product_tmpl_id =pt.id  
-                left join res_partner rp on po.partner_id =rp.id
                 left join method_minori_marcas mmm on pt.marca_id =mmm.id
-                left join product_category pc on pt.categ_id =pc.id
                 where po.state = 'posted'
                 and po.move_type in ('out_invoice', 'out_refund')
-                and coalesce(pol.display_type, 'product') = 'product'
+                and (pol.display_type IS NULL OR pol.display_type = 'product')
             )
         """ % (
             self._table

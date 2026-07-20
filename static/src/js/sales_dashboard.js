@@ -92,10 +92,6 @@ export class MinoriSalesDashboard extends Component {
             res_model: "method_minori.ventas_report_marcas",
             views: [[false, "pivot"], [false, "graph"], [false, "tree"]],
             domain,
-            context: {
-                search_default_group_by_product: 1,
-                search_default_group_by_customer: 1,
-            },
         });
     }
 

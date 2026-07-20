@@ -34,8 +34,6 @@
         <field name="arch" type="xml">
             <pivot string="Ventas por Marca" disable_linking="True">
                 <field name="marca_id" type="row"/>
-                <field name="product_product_id" type="row"/>
-                <field name="cliente_id" type="col"/>
                 <field name="cantidad" type="measure"/>                
                 <field name="price_subtotal" type="measure"/>
                 <field name="price_subtotal_incl" type="measure"/>

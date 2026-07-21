@@ -45,6 +45,14 @@
             <field name="groups" eval="[(4, ref('group_proveedores_marcas_user'))]"/>
         </record>
 
+        <!-- El informe SQL consolida datos de todas las compañías. Restringirlo
+             a la compañía activa evita mezclar ventas y sucursales entre ellas. -->
+        <record id="minori_ventas_marcas_company_rule" model="ir.rule">
+            <field name="name">Ventas por marca de la compañía activa</field>
+            <field ref="model_method_minori_ventas_report_marcas" name="model_id"/>
+            <field name="domain_force">[('company_id', '=', company_id)]</field>
+        </record>
+
         <record id="minori_ventas_marcas_propias_proveedor" model="ir.rule">
             <field name="name">Ventas propias asignadas al proveedor</field>
             <field ref="model_method_minori_report_marcas_propias" name="model_id"/>

@@ -58,7 +58,7 @@ class ReporteComisionMarcas(models.TransientModel):
 class PeriodoComision(models.Model):
     _name = 'method_minori.periodos'
 
-    name = fields.Char(string='Nombre del Periodo', required=True)
+    name = fields.Char(string='Nombre del Periodo', compute='_compute_name', store=True, readonly=True)
     nota = fields.Text(string='Descripción')
     fecha_inicial = fields.Datetime(string='Fecha Inicial', required=True)
     fecha_final = fields.Datetime(string='Fecha Final', required=True)
@@ -73,11 +73,16 @@ class PeriodoComision(models.Model):
         9: 'Septiembre', 10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre',
     }
 
+    @api.depends('fecha_inicial')
+    def _compute_name(self):
+        for rec in self:
+            if rec.fecha_inicial:
+                rec.name = "{}{:02d}".format(rec.fecha_inicial.year, rec.fecha_inicial.month)
+            else:
+                rec.name = False
+
     @api.onchange('fecha_inicial','fecha_final')
     def _onchange_fecha(self):
-        if self.fecha_inicial:
-            mes = self._MESES_ES[self.fecha_inicial.month]
-            self.name = "{} {}".format(mes, self.fecha_inicial.year)
         if self.fecha_inicial and self.fecha_final:
             self.nota="""
             El periodo tiene como fechas de corte:

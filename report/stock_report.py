@@ -287,13 +287,18 @@ class StockReport(models.Model):
     )
     nombre_producto = fields.Char(string='Nombre Producto')
     sku = fields.Char(string='SKU')
+    company_id = fields.Many2one(
+        'res.company',
+        string='Compañía',
+        readonly=True,
+    )
 
 
     def init(self):
         user=self.env.uid
         tools.drop_view_if_exists(self._cr, self._table)
         self._cr.execute("""
-            CREATE OR REPLACE VIEW %s AS (SELECT 
+            CREATE OR REPLACE VIEW %s AS (SELECT
                     ROW_NUMBER() OVER() AS id,
                     sq.product_id AS product_id,
                     pp.product_tmpl_id ,
@@ -303,14 +308,15 @@ class StockReport(models.Model):
                     mmm.user_id,pt.list_price AS precio_venta,
                     sl.id as location_id,
                     COALESCE(pt.name->>'es_CL', pt.name->>'es_ES', pt.name->>'en_US', pp.default_code, '') as nombre_producto,
-                    pp.default_code as sku
-                    FROM stock_quant sq, product_product pp ,product_template pt,method_minori_marcas mmm,stock_location sl  
-                    where sq.product_id =pp.id 
+                    pp.default_code as sku,
+                    sq.company_id as company_id
+                    FROM stock_quant sq, product_product pp ,product_template pt,method_minori_marcas mmm,stock_location sl
+                    where sq.product_id =pp.id
                     and pp.product_tmpl_id =pt.id
                     and pt.marca_id =mmm.id
-                    and sq.location_id =sl.id 
+                    and sq.location_id =sl.id
                     and sl.usage='internal'
-                    and pp.active=true                     
+                    and pp.active=true
             )
         """ % (
             self._table

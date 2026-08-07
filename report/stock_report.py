@@ -150,8 +150,8 @@ class MarcasPropias(models.Model):
     product_template_id = fields.Many2one(comodel_name='product.template', string='Plantilla Producto')
     cantidad = fields.Float(string='Cantidad')
     price_unit = fields.Float(string='Precio Unitario')
-    neto = fields.Float(string='Neto Línea')
-    bruto = fields.Float(string='Bruto Línea')
+    neto = fields.Monetary(string='Neto Línea', currency_field='currency_id')
+    bruto = fields.Monetary(string='Bruto Línea', currency_field='currency_id')
     marca_id = fields.Many2one(comodel_name='method_minori.marcas', string='Marca')
     categ_id = fields.Many2one(comodel_name='product.category', string='Categoria Producto')
     user_id = fields.Many2one(
@@ -169,13 +169,15 @@ class MarcasPropias(models.Model):
     session_id = fields.Many2one(comodel_name='pos.session', string='Sesión')
     sucursal_id = fields.Many2one(comodel_name='pos.config', string='Sucursal')
     es_propia = fields.Boolean(string='Es marca propia?')
+    company_id = fields.Many2one(comodel_name='res.company', string='Compañía')
+    currency_id = fields.Many2one(comodel_name='res.currency', string='Moneda')
 
 
     def init(self):
         user=self.env.uid
         tools.drop_view_if_exists(self._cr, self._table)
         self._cr.execute("""
-            CREATE OR REPLACE VIEW %s AS (SELECT 
+            CREATE OR REPLACE VIEW %s AS (SELECT
                     (pol.id * 2) AS id,
                     sdc.name as tipodocto,
                     'POS' as origen,
@@ -193,21 +195,24 @@ class MarcasPropias(models.Model):
                     po.user_id as vendedor_id,
                     mmm.comision_marca ,
                     round((pol.price_subtotal * (mmm.comision_marca/100))) as comision,
-                    ps.id as session_id , 
+                    ps.id as session_id ,
                     pc2.id as sucursal_id,
-                    mmm.es_propia
+                    mmm.es_propia,
+                    mmm.company_id,
+                    rc.currency_id
                     from pos_order po left join sii_document_class sdc on po.document_class_id =sdc.id
-                    inner join pos_order_line pol on po.id =pol.order_id 
+                    inner join pos_order_line pol on po.id =pol.order_id
                     inner join product_product pp on pol.product_id =pp.id
-                    inner join product_template pt on pp.product_tmpl_id =pt.id  
+                    inner join product_template pt on pp.product_tmpl_id =pt.id
                     left join res_partner rp on po.partner_id =rp.id
                     left join method_minori_marcas mmm on pt.marca_id =mmm.id
-                    left join product_category pc on pt.categ_id =pc.id 
-                    left join pos_session ps on po.session_id =ps.id 
+                    left join res_company rc on rc.id =mmm.company_id
+                    left join product_category pc on pt.categ_id =pc.id
+                    left join pos_session ps on po.session_id =ps.id
                     left join pos_config pc2 on ps.config_id =pc2.id
                     where po.state in ('paid', 'done', 'invoiced')
                     union
-                    SELECT 
+                    SELECT
                     (pol.id * 2 + 1) AS id,
                     'Nota de Venta' as tipodocto,
                     'Ventas' as origen,
@@ -225,14 +230,17 @@ class MarcasPropias(models.Model):
                     po.user_id as vendedor_id,
                     mmm.comision_marca ,
                     round((pol.price_subtotal * (mmm.comision_marca/100))) as comision,
-                    0 as session_id , 
+                    0 as session_id ,
                     0 as sucursal_id,
-                    mmm.es_propia
-                    from sale_order  po inner join sale_order_line  pol on po.id =pol.order_id 
+                    mmm.es_propia,
+                    mmm.company_id,
+                    rc.currency_id
+                    from sale_order  po inner join sale_order_line  pol on po.id =pol.order_id
                     inner join product_product pp on pol.product_id =pp.id
-                    inner join product_template pt on pp.product_tmpl_id =pt.id  
+                    inner join product_template pt on pp.product_tmpl_id =pt.id
                     left join res_partner rp on po.partner_id =rp.id
                     left join method_minori_marcas mmm on pt.marca_id =mmm.id
+                    left join res_company rc on rc.id =mmm.company_id
                     left join product_category pc on pt.categ_id =pc.id
                     where po.state in ('sale', 'done')
             )

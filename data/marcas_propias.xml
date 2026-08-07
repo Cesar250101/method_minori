@@ -76,5 +76,14 @@
             <field ref="model_method_minori_stock_report" name="model_id"/>
             <field name="domain_force">[('company_id', '=', company_id)]</field>
         </record>
+
+        <!-- El informe SQL consolida ventas de marcas propias de todas las
+             compañías. Restringirlo a la compañía activa evita mezclar
+             marcas entre ellas. -->
+        <record id="minori_report_marcas_propias_company_rule" model="ir.rule">
+            <field name="name">Ventas marcas propias de la compañía activa</field>
+            <field ref="model_method_minori_report_marcas_propias" name="model_id"/>
+            <field name="domain_force">[('company_id', '=', company_id)]</field>
+        </record>
     </data>
 </odoo>

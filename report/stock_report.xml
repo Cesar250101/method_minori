@@ -46,10 +46,11 @@
         <field name="model">method_minori.report_marcas_propias</field>
         <field name="arch" type="xml">
             <pivot string="Ventas Marca Propias y Externas" disable_linking="True">
+                <field name="es_propia" type="row"/>
                 <field name="marca_id" type="row"/>
                 <field name="product_product_id" type="row"/>
-                <field name="cantidad" type="measure"/>                
-                <field name="neto" type="measure"/>                
+                <field name="cantidad" type="measure"/>
+                <field name="neto" type="measure"/>
                 <field name="bruto" type="measure"/>
             </pivot>
         </field>
@@ -122,13 +123,13 @@
     <record id="method_minori.venta_marcas_propias_report_graph" model="ir.ui.view">
         <field name="model">method_minori.report_marcas_propias</field>
         <field name="arch" type="xml">
-            <graph string="Ventas marca propias y externas">
-                <field name="product_product_id" type="row"/>
+            <graph string="Ventas marca propias y externas" type="bar">
+                <field name="marca_id" type="row"/>
                 <field name="es_propia" type="col"/>
                 <field name="neto" type="measure"/>
             </graph>
         </field>
-    </record>    
+    </record>
 
     <record id="method_minori.stock_report_graphsearch" model="ir.ui.view">
         <field name="model">method_minori.stock_report</field>

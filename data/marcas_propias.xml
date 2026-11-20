@@ -3,7 +3,7 @@
     <data noupdate="1">
 
         <record model="ir.module.category" id="module_proveedor_stock_category">
-            <field name="name">Stock Proveedores</field>
+            <field name="name">ConceptStore</field>
             <field name="description">Acceso de Proveedores</field>
             <field name="sequence">20</field>
         </record>

@@ -30,14 +30,34 @@ class MinoriSalesDashboard(models.Model):
         return self.search(domain, order='name')
 
     @api.model
-    def get_sales_dashboard_data(self, brand_id=False, date_from=False, date_to=False):
+    def get_sales_dashboard_data(self, brand_id=False, date_from=False, date_to=False,
+                                 all_brands=False):
+        """Datos del dashboard de ventas por marca.
+
+        Contrato:
+          * ``brand_id`` concreto: ventas de esa marca (debe estar entre las marcas
+            permitidas del usuario, si no ``AccessError``).
+          * ``brand_id`` falso y ``all_brands`` falso: se usa la primera marca
+            permitida (comportamiento histórico del dashboard del backend de Odoo).
+          * ``all_brands=True``: consolidado de TODAS las marcas activas de la
+            compañía activa (las mismas que ``brands``). Solo se permite si el
+            usuario tiene acceso total (``_has_all_brand_access``); si no,
+            ``AccessError``. Tiene prioridad sobre ``brand_id``.
+
+        La forma de la respuesta es la misma en ambos modos. En el consolidado
+        ``selected_brand_id`` es ``False`` y ``all_brands`` es ``True``.
+        """
+        if all_brands and not self._has_all_brand_access():
+            raise AccessError(_('No tiene acceso a la vista consolidada de todas las marcas.'))
+
         allowed_brands = self._get_allowed_dashboard_brands()
         brand_values = [{'id': brand.id, 'name': brand.name} for brand in allowed_brands]
 
         if not allowed_brands:
-            return {
+            empty = {
                 'brands': [],
                 'selected_brand_id': False,
+                'all_brands': bool(all_brands),
                 'date_from': date_from,
                 'date_to': date_to,
                 'currency': self.env.company.currency_id.symbol or '$',
@@ -47,27 +67,41 @@ class MinoriSalesDashboard(models.Model):
                 'sellers': [],
                 'pos_branches': [],
             }
+            if all_brands:
+                empty['sales_by_brand'] = []
+            return empty
 
-        selected_brand = allowed_brands[0]
-        if brand_id:
-            selected_brand = self.browse(int(brand_id))
-            if selected_brand not in allowed_brands:
-                raise AccessError(_('No tiene acceso a la marca seleccionada.'))
+        if all_brands:
+            selected_brands = allowed_brands
+            selected_brand_id = False
+        else:
+            selected_brand = allowed_brands[0]
+            if brand_id:
+                try:
+                    brand_id = int(brand_id)
+                except (TypeError, ValueError):
+                    raise UserError(_('Marca inválida.'))
+                selected_brand = self.browse(brand_id)
+                if selected_brand not in allowed_brands:
+                    raise AccessError(_('No tiene acceso a la marca seleccionada.'))
+            selected_brands = selected_brand
+            selected_brand_id = selected_brand.id
 
         date_from_value, date_to_value = self._normalize_dashboard_dates(date_from, date_to)
         date_to_exclusive = date_to_value + timedelta(days=1)
 
         params = {
-            'brand_id': selected_brand.id,
+            'brand_ids': selected_brands.ids,
             'date_from': date_from_value,
             'date_to': date_to_exclusive,
             'lang': self.env.lang or 'en_US',
             'company_id': self.env.company.id,
         }
 
-        return {
+        result = {
             'brands': brand_values,
-            'selected_brand_id': selected_brand.id,
+            'selected_brand_id': selected_brand_id,
+            'all_brands': bool(all_brands),
             'date_from': fields.Date.to_string(date_from_value),
             'date_to': fields.Date.to_string(date_to_value),
             'currency': self.env.company.currency_id.symbol or '$',
@@ -77,6 +111,11 @@ class MinoriSalesDashboard(models.Model):
             'sellers': self._get_sales_dimension(params, 'seller'),
             'pos_branches': self._get_sales_by_pos(params),
         }
+        if all_brands:
+            # Additive key: only present in consolidated mode, so the single-brand
+            # response (and the Odoo backend dashboard that consumes it) is unchanged.
+            result['sales_by_brand'] = self._get_sales_by_brand(params)
+        return result
 
     def _normalize_dashboard_dates(self, date_from, date_to):
         today = fields.Date.context_today(self)
@@ -101,7 +140,7 @@ class MinoriSalesDashboard(models.Model):
                 JOIN pos_order_line pol ON pol.order_id = po.id
                 JOIN product_product pp ON pp.id = pol.product_id
                 JOIN product_template pt ON pt.id = pp.product_tmpl_id
-                WHERE pt.marca_id = %(brand_id)s
+                WHERE pt.marca_id = ANY(%(brand_ids)s)
                     AND po.company_id = %(company_id)s
                     AND po.state IN ('paid', 'done', 'invoiced')
                     AND po.date_order >= %(date_from)s
@@ -121,7 +160,7 @@ class MinoriSalesDashboard(models.Model):
                 JOIN account_move_line aml ON aml.move_id = am.id
                 JOIN product_product pp ON pp.id = aml.product_id
                 JOIN product_template pt ON pt.id = pp.product_tmpl_id
-                WHERE pt.marca_id = %(brand_id)s
+                WHERE pt.marca_id = ANY(%(brand_ids)s)
                     AND am.company_id = %(company_id)s
                     AND am.state = 'posted'
                     AND am.move_type IN ('out_invoice', 'out_refund')
@@ -201,6 +240,38 @@ class MinoriSalesDashboard(models.Model):
         self.env.cr.execute(query, params)
         return [self._format_dimension_row(row) for row in self.env.cr.dictfetchall()]
 
+    def _get_sales_by_brand(self, params):
+        """Ventas por marca con la misma CTE (periodo, compañía, POS + facturas) que
+        ``summary``; la suma de ``amount_total`` cuadra con ``summary.amount_total``."""
+        self.env.cr.execute(
+            self._sales_cte()
+            + """
+                SELECT
+                    sales.brand_id AS brand_id,
+                    mm.name AS brand_name,
+                    COALESCE(SUM(sales.quantity), 0) AS quantity,
+                    COALESCE(SUM(sales.amount_untaxed), 0) AS amount_untaxed,
+                    COALESCE(SUM(sales.amount_total), 0) AS amount_total,
+                    COUNT(*) AS lines
+                FROM sales
+                LEFT JOIN method_minori_marcas mm ON mm.id = sales.brand_id
+                GROUP BY sales.brand_id, mm.name
+                ORDER BY amount_total DESC, mm.name
+            """,
+            params,
+        )
+        return [
+            {
+                'brand_id': row.get('brand_id') or False,
+                'brand_name': row.get('brand_name') or _('Sin marca'),
+                'amount': float(row.get('amount_total') or 0.0),
+                'amount_untaxed': float(row.get('amount_untaxed') or 0.0),
+                'units': float(row.get('quantity') or 0.0),
+                'lines': int(row.get('lines') or 0),
+            }
+            for row in self.env.cr.dictfetchall()
+        ]
+
     def _get_sales_by_pos(self, params):
         self.env.cr.execute("""
             SELECT
@@ -216,7 +287,7 @@ class MinoriSalesDashboard(models.Model):
             JOIN pos_config pc ON pc.id = ps.config_id
             JOIN product_product pp ON pp.id = pol.product_id
             JOIN product_template pt ON pt.id = pp.product_tmpl_id
-            WHERE pt.marca_id = %(brand_id)s
+            WHERE pt.marca_id = ANY(%(brand_ids)s)
                 AND po.company_id = %(company_id)s
                 AND po.state IN ('paid', 'done', 'invoiced')
                 AND po.date_order >= %(date_from)s

@@ -19,3 +19,11 @@ class ResCompany(models.Model):
              '- Períodos definidos: usa los registros de method_minori.periodos.\n'
              '- Mes cerrado: usa meses calendario completos (del 1 al último día de cada mes).',
     )
+
+    permitir_crear_categorias = fields.Boolean(
+        string='Permitir crear categorías desde el portal',
+        default=True,
+        help='Si se desactiva, el portal de marcas no permite crear categorías de producto '
+             'desde el formulario de producto ni desde la carga masiva; solo se podrán '
+             'usar las categorías ya existentes.',
+    )

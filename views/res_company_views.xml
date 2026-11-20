@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='currency_id']" position="after">
                 <field name="liquidacion_mode"/>
+                <field name="permitir_crear_categorias"/>
             </xpath>
         </field>
     </record>
